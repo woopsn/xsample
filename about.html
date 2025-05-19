@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Xsampler: About</title>
+</head>
+<body>
+  <header>
+    Examples: <a href="dirichletk.html">Fourier Series</a>,
+              <a href="dft.html">Fourier Transform</a>,
+              <a href="logistic.html">Logistic Map</a>,
+              <a href="heat.html">Heat Equation</a>,
+              <a href="index.html">Workspace</a>
+    |
+    <a href="about.html">About</a>
+  </header>
+
+  <div class="workspace">
+    <h1>Workspace</h1>
+
+    <fieldset>
+      <legend>About</legend>
+
+      <table>
+        <caption>Numeric data</caption>
+
+        <tr><td><tt>0.1</tt>, <br /><tt>6.02e23</tt>, <br /><tt>pi</tt>, etc.</td><td>scalar</td></tr>
+        <tr><td><tt>[&sdot;&sdot; &ctdot; &sdot;]</tt></td><td>matrix (1xN)</td></tr>
+        <tr><td><tt>[&sdot;; &sdot;; &ctdot; ; &sdot;]</tt></td><td>matrix (Mx1)</td></tr>
+        <tr><td><tt>[&sdot;&sdot; &ctdot;; &sdot;&sdot; &ctdot;; &ctdot; ; &sdot;&sdot;&ctdot;]</tt></td><td>matrix (MxN)</td></tr>
+      </table>
+
+      <table>
+        <caption>Arithmetic</caption>
+        <tr><td><tt>+</tt>, <tt>-</tt></td><td>Addition, subtraction (pointwise)</td></tr>
+        <tr><td><tt>*</tt>, <tt>/</tt>, <tt>^</tt></td><td>Multiplication (matrix), division, exponentiation (scalar)</td></tr>
+        <tr><td><tt>.*</tt>, <tt>./</tt>, <tt>.^</tt></td><td>Multiplication, division, exponentiation (pointwise)</td></tr>
+        <tr><td><tt>&lt;</tt>, <tt>&lt;=</tt>,<br /><tt>&gt;</tt>, <tt>&gt;=</tt>,<br /><tt>==</tt>, <tt>!=</tt></td><td>Comparison (pointwise)</td></tr>
+        <tr><td><tt>&amp;</tt>, <tt>|</tt>, <tt>!</tt></td><td></td></tr>
+      </table>
+
+      <table>
+        <caption>Basic Constructors</caption>
+        <tr><td>(<tt>min:max</tt>) <tt>colon(min, max, step=1)</tt></td></tr>
+        <tr><td><tt>linspace(min, max, N=100)</tt></td></tr>
+        <tr><td><tt>matrix(M, N, f_ij)</tt></td></tr>
+        <tr><td><tt>matrix(M, N) f_ij</tt></td></tr>
+        <tr><td><tt>zeros(M, N)</tt></td></tr>
+      </table>
+
+      <table>
+        <caption>Alignment</caption>
+        <tr><td>(<tt>A^T</tt>) <tt>transpose(A)</tt></td><td></td></tr>
+        <tr><td><tt>shift(A, N)</tt></td><td></td></tr>
+        <tr><td><tt>fftshift(x)</tt></td><td></td></tr>
+      </table>
+
+      <table>
+        <caption>Functional</caption>
+        <tr><td><tt>min(x)</tt>, <tt>max(x)</tt></td><td></td></tr>
+        <tr><td><tt>iterate(f_x, N, x_0)</tt></td><td></td></tr>
+      </table>
+
+      <table>
+        <caption>Transformations</caption>
+        <tr><td><tt>conv(x, y)</tt></td><td>Convolutional product</td></tr>
+        <tr><td><tt>dfr_r(N), dfr_i(N)</tt></td><td>Real/imaginary DFT components</td></tr>
+      </table>
+
+      <table>
+        <caption>Figure manipulation</caption>
+        <tr><td><tt>plot(fid, X1, Y1, X2, Y2, ...)</tt>, <br /><tt>scatter(fid, X1, Y1, X2, Y2, ...)</tt>, <br /><tt>table(fid, X1, Y1, X2, Y2, ...)</tt></td><td>Add XY data to figure</td></tr>
+        <tr><td><tt>xlim(fid, limits)</tt>, <br /><tt>ylim(fid, limits)</td><td></td></tr>
+      </table>
+    </fieldset>
+  </div>
+
+  <script type="module" src="src/index.js"></script>
+</body>
+</html>

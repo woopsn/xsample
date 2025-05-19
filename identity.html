@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Xsampler: Fourier Series</title>
+</head>
+<body>
+  <header>
+    Examples: <a href="dirichletk.html">Fourier Series</a>,
+              <a href="dft.html">Fourier Transform</a>,
+              <a href="logistic.html">Logistic Map</a>,
+              <a href="heat.html">Heat Equation</a>,
+              <a href="index.html">Workspace</a>
+  </header>
+
+  <div class="workspace">
+    <h1>Parition of Unity?</h1>
+
+    <div class="flex-parent display-area">
+    </div>
+
+    <form class="edit_lab_script" novalidate>
+      <div class="flex-parent">
+        <fieldset class="flex">
+          <legend>Source</legend>
+
+          <textarea id="lab_script_source" rows="8">
+n = param(0, colon(1, 30), 8)
+w = param(1, linspace(0, 1), 0.3)
+x = linspace(-pi, pi, 8*n)
+
+e = fold(colon(0, n), x*0, @(s, n) s+cos(n*x))
+
+s = (abs(x+2) < w) - (abs(x+1) < w) + (abs(x) < w) + (abs(x-1) < w) - (abs(x-2) < w)
+se = conv(s, e) / (length(x)/2)
+
+x2 = linspace(-2*pi, 2*pi, length(se))
+
+plot(0, x, e)
+plot(1, x, s, x2, se)
+          </textarea>
+        </fieldset>
+
+        <fieldset>
+          <legend>Parameters</legend>
+
+          <ul data-params></ul>
+        </fieldset>
+      </div>
+
+      <div class="actions">
+        <input type="submit" value="Calculate" />
+      </div>
+    </form>
+  </div>
+
+  <script type="module" src="src/index.js"></script>
+</body>
+</html>
