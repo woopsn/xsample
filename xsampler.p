@@ -16,8 +16,12 @@ LogExpr = head:RngExpr tail:(_ logop _ RngExpr)* { return makeOp(head, tail) }
 RngExpr = head:CmpExpr tail:(_ rngop _ CmpExpr)* { return makeOp(head, tail) }
 CmpExpr = head:AddExpr tail:(_ cmpop _ AddExpr)* { return makeOp(head, tail) }
 AddExpr = head:MulExpr tail:(_ addop _ MulExpr)* { return makeOp(head, tail) }
-MulExpr = head:ExpExpr tail:(_ mulop _ ExpExpr)* { return makeOp(head, tail) }
-ExpExpr = head:Term tail:(_ expop _ Term)* { return makeOp(head, tail) };
+MulExpr = head:UnaryExpr tail:(_ mulop _ UnaryExpr)* { return makeOp(head, tail) }
+UnaryExpr = unop:[-+!] expr:UnaryExpr { return { op: unop, lhs: { op: "$mkscalar", value: 0 }, rhs: expr }; }
+          / ExpExpr
+ExpExpr = head:Term tail:(_ expop _ ExpOperand)* { return makeOp(head, tail) }
+ExpOperand = unop:[-+!] expr:ExpOperand { return { op: unop, lhs: { op: "$mkscalar", value: 0 }, rhs: expr }; }
+           / Term
 
 Term
   = "(" _ expr:Expression _ ")" args:Args? {
@@ -29,7 +33,6 @@ Term
 	/ Formula
 	/ VariableOrCall
   / Numeric
-  / unop:[-+!] expr:Term { return { op: unop, lhs: { op: "$mkscalar", value: 0 }, rhs: expr }; }
 
 Formula
   = "@" args:Args expr:Expression {
@@ -54,7 +57,8 @@ Variable
 	= [A-Za-z][A-Za-z0-9_]* { return text() }
 
 Numeric
-  = Decimal "e" "-"? Integer { return { op: "$mkscalar", value: parseFloat(text()) }; }
+  = Decimal "e" [-+]? Integer { return { op: "$mkscalar", value: parseFloat(text()) }; }
+  / Integer "e" [-+]? Integer { return { op: "$mkscalar", value: parseFloat(text()) }; }
   / Decimal / Integer / Matrix
 
 Matrix

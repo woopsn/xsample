@@ -10,6 +10,18 @@ describe("arithmetic", () => {
         expect(run("x = 2 ^ 3").x).toEqual(scalar(8));
     });
 
+    test("exponentiation binds tighter than unary minus", () => {
+        expect(run("x = -2 ^ 2").x).toEqual(scalar(-4));
+    });
+
+    test("unary operators stack", () => {
+        expect(run("x = --2").x).toEqual(scalar(2));
+    });
+
+    test("an exponent may carry a sign", () => {
+        expect(run("x = 2 ^ -1").x).toEqual(scalar(0.5));
+    });
+
     test("is elementwise on matrices of the same shape", () => {
         expect(run("x = [1, 2; 3, 4] + [10, 20; 30, 40]").x)
             .toEqual(matrix([11, 22], [33, 44]));
@@ -120,10 +132,6 @@ describe("formulas", () => {
 describe("known bugs", () => {
     test.fails("whitespace separates a signed matrix element", () => {
         expect(run("x = [1 -1]").x).toEqual(matrix([1, -1]));
-    });
-
-    test.fails("exponentiation binds tighter than unary minus", () => {
-        expect(run("x = -2 ^ 2").x).toEqual(scalar(-4));
     });
 
     test.fails("a matrix compares <= against a scalar", () => {

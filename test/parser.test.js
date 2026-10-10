@@ -15,6 +15,12 @@ describe("literals", () => {
         expect(parse("1.5e-2")).toEqual([literal(0.015)]);
     });
 
+    test("integer with exponent", () => {
+        expect(parse("1e5")).toEqual([literal(1e5)]);
+        expect(parse("2e-3")).toEqual([literal(0.002)]);
+        expect(parse("2e+3")).toEqual([literal(2000)]);
+    });
+
     test("matrix lists its elements row by row", () => {
         expect(parse("[1, 2; 3, 4]")).toEqual([
             { op: "$mkmatrix", rows: 2, args: [1, 2, 3, 4].map(literal) },
@@ -111,10 +117,6 @@ describe("statements", () => {
 });
 
 describe("known bugs", () => {
-    test.fails("an exponent needs no decimal point", () => {
-        expect(parse("1e5")).toEqual([literal(1e5)]);
-    });
-
     test.fails("... continues a statement on the next line", () => {
         expect(parse("1 ...\n + 2")).toEqual(parse("1 + 2"));
     });
