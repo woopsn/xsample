@@ -86,13 +86,3 @@ export type Node =
   | MkMatrix
   | MkFormula
   | Binary;
-
-// Calls fn on every node, parents first. Formulas are not entered.
-export function visit(ast: Node[], fn: (node: Node) => void): void {
-  for (const node of ast) {
-    fn(node);
-    if ("lhs" in node) visit([node.lhs], fn);
-    if ("rhs" in node) visit([node.rhs], fn);
-    if ("args" in node) visit(node.args, fn);
-  }
-}
