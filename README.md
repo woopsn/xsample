@@ -67,6 +67,7 @@ The project is being brought back up from a prototype:
 
 ## UI
 
+```
 ------------------------------------------------------------------------------
 |
 |
@@ -94,4 +95,4 @@ The project is being brought back up from a prototype:
 |
 |
 |
-
+```
