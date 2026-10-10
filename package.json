@@ -5,12 +5,14 @@
   "author": "Peter Woo <peter@wioux.net>",
   "devDependencies": {
     "sass": "^1.88.0",
-    "vite": "^6.3.5"
+    "vite": "^6.4.0",
+    "vitest": "^5.0.3"
   },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "chart.js": "^4.4.9",
