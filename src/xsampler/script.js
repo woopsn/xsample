@@ -1,4 +1,4 @@
-import { parse } from "../xsampler/parser";
+import { parse } from "../../xsampler.p";
 import { visit } from "../fpu/vm";
 
 export function Script(source) {

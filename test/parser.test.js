@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parse } from "../src/xsampler/parser";
+import { parse } from "../xsampler.p";
 import { literal, variable } from "./helpers";
 
 describe("literals", () => {

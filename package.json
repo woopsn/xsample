@@ -13,8 +13,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run",
-    "parser": "peggy --format es -o src/xsampler/parser.js xsampler.p"
+    "test": "vitest run"
   },
   "dependencies": {
     "chart.js": "^4.4.9",
