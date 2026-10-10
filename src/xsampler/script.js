@@ -1,5 +1,5 @@
 import { parse } from "../../xsampler.p";
-import { visit } from "../fpu/vm";
+import { visit } from "../fpu/ast";
 
 export function Script(source) {
 		this.source = source;

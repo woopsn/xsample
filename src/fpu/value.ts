@@ -1,7 +1,9 @@
-// The parameters and body of `@(x) ...`, as AST nodes.
+import type { Node, Resolve } from "./ast";
+
+// The parameters and body of `@(x) ...`.
 export interface Formula {
-  params: unknown[];
-  code: unknown[];
+  params: Resolve[];
+  body: Node;
 }
 
 // Every value is a matrix in row-major order; a scalar is 1x1.

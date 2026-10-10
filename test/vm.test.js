@@ -41,6 +41,10 @@ describe("arithmetic", () => {
     expect(run("x = [1, 2, 3] .^ 2").x).toEqual(matrix([1, 4, 9]));
   });
 
+  test("operands are evaluated left to right", () => {
+    expect(run("x = 1; y = (x = 5) + x").y).toEqual(scalar(10));
+  });
+
   test("unary minus negates every element", () => {
     expect(run("x = -[1, 2]").x).toEqual(matrix([-1, -2]));
   });

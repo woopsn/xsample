@@ -1,12 +1,6 @@
 import { mknum } from "./value";
-import type { Formula, Value } from "./value";
-
-// What a builtin may ask of the machine that calls it.
-export interface Machine {
-  evaluate(formula: Formula, args: Value[]): Value;
-}
-
-export type Builtin = (fpu: Machine, args: Value[]) => Value | undefined;
+import type { Value } from "./value";
+import type { Builtin } from "./vm";
 
 function norm(x: Value): number {
   let sum = 0;
@@ -22,6 +16,8 @@ export const library: Record<string, Builtin> = {
     args.forEach(function (a, i) {
       console.log("[" + i + "]", a);
     });
+
+    return mknum(0, 0);
   },
 
   linspace(fpu, args) {
