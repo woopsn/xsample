@@ -23,6 +23,7 @@ plot(0, x, iterate(step, n, u0))
     yarn dev       # dev server
     yarn build     # production build into dist/
     yarn test      # run the tests
+    yarn typecheck # check the types
 
 The parser is compiled from the grammar in `xsampler.p` with
 [Peggy](https://peggyjs.org), by a Vite plugin in `vite.config.js`.

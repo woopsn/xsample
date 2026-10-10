@@ -1,12 +1,13 @@
 import $ from 'jquery';
 import { X } from './x';
 
-import { vm, mknum } from "../fpu/vm";
-import { library as fpulib } from "../fpu/library";
+import { vm } from "../fpu/vm";
+import { mknum } from "../fpu/value";
+import { library as fpulib, constants } from "../fpu/library";
 import { Script } from "../xsampler/script";
 
 export function Workspace(source) {
-		this.vm = new vm(this.library());
+		this.vm = new vm(this.library(), constants);
 
 		this.script = new Script(source);
 

@@ -1,6 +1,9 @@
-export function vm(library) {
+import { mknum } from "./value";
+
+export function vm(library, constants) {
 		let ctx = {};
 		this.library = library;
+		this.constants = constants;
 		this.frames = [ctx];
 }
 
@@ -10,7 +13,7 @@ vm.prototype.exec = function(ast, lib) {
 		if (lib)
 				this.library = {...this.library, ...lib};
 
-		Object.entries(this.library.__frame__ || {}).forEach(function(xy) {
+		Object.entries(this.constants).forEach(function(xy) {
 				vm.frames[0][xy[0]] = xy[1];
 		});
 
@@ -399,12 +402,6 @@ vm.prototype.evaluate = function(formula, args) {
 		let value = this.interpret(formula.code);
 		this.frames.pop();
     return value;
-}
-
-export function mknum(rows, cols, val) {
-		let num = { rows: rows, cols: cols, data: new Float64Array(rows*cols) };
-		if (val) num.data.fill(val);
-		return num;
 }
 
 export function mkformula(params, code) {
