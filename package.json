@@ -5,6 +5,7 @@
   "author": "Peter Woo <peter@wioux.net>",
   "devDependencies": {
     "peggy": "^5.0.2",
+    "prettier": "^3.9.10",
     "sass": "^1.88.0",
     "typescript": "^7.0.2",
     "vite": "^6.4.0",
@@ -15,7 +16,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "chart.js": "^4.4.9",
