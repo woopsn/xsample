@@ -1,5 +1,3 @@
-// Generate parser.js with https://peggyjs.org/online.html
-
 {{
 		function makeOp(head, tail) {
 				return tail.reduce(function(result, element) {

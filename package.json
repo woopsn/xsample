@@ -4,6 +4,7 @@
   "main": "index.js",
   "author": "Peter Woo <peter@wioux.net>",
   "devDependencies": {
+    "peggy": "^5.0.2",
     "sass": "^1.88.0",
     "vite": "^6.4.0",
     "vitest": "^5.0.3"
@@ -12,7 +13,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "parser": "peggy --format es -o src/xsampler/parser.js xsampler.p"
   },
   "dependencies": {
     "chart.js": "^4.4.9",
