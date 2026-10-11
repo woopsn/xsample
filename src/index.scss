@@ -80,104 +80,21 @@ table {
   }
 
   fieldset {
-    &.editing {
-      border: 2px dashed lighten(blue, 30%);
-    }
-
     > legend {
       padding: 0.6rem;
       background: lighten($light-green, 60%);
     }
 
-    &.editing > legend {
-      background: lighten(blue, 40%);
-
-      &:before {
-        content: "Configure: ";
-      }
-    }
-
-    &[data-chart_type] {
-      position: relative;
-    }
-
-    &[data-chart_type="line"],
-    &[data-chart_type="scatter"] {
+    // a figure may shrink below the width its chart was drawn at
+    &.display {
       flex: 1;
-    }
-
-    &[data-chart_type="table"] {
-      max-height: 300px;
-      overflow: auto;
-    }
-
-    figure {
-      margin: 0;
-      height: 300px;
-    }
-
-    figure table {
-      border-collapse: collapse;
-    }
-
-    figure table td {
-      vertical-align: top;
-
-      &:not(:first-child) {
-        padding-left: 1rem;
-      }
-    }
-
-    figure table tr,
-    figure table td {
-      border-bottom: 1px solid #aaa;
+      min-width: 0;
     }
 
     ul {
       list-style-type: none;
       padding: 0;
       margin: 0;
-    }
-  }
-
-  fieldset[data-chart_type] {
-    form {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: inherit;
-      overflow: auto;
-      padding: 1rem;
-    }
-
-    a[data-configure_chart_id] {
-      display: none;
-    }
-
-    &:not(.editing):hover a[data-configure_chart_id] {
-      display: inline;
-
-      color: black;
-      background: #eee;
-      padding: 0.2rem;
-      font-size: 0.7em;
-
-      position: absolute;
-      right: 1rem;
-      top: 0;
-      z-index: 1;
-
-      &:not(:hover) {
-        text-decoration: none;
-      }
-    }
-
-    a[data-cancel_configure_chart] {
-      position: absolute;
-      top: 0;
-      right: 1rem;
     }
   }
 }

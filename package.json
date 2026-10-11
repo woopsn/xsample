@@ -22,10 +22,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "chart.js": "^4.4.9",
-    "chartkick": "^5.0.1",
-    "jquery": "^3.7.1",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "uplot": "^1.6.32"
   }
 }
