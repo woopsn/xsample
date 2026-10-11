@@ -3,5 +3,4 @@ dist
 *.md
 
 # Not ported yet: formatted as each file moves to TypeScript.
-src/index.js
 src/workspace/x.js
