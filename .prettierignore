@@ -1,0 +1,6 @@
+dist
+*.html
+*.md
+
+# Not ported yet: formatted as each file moves to TypeScript.
+src/**/*.js
