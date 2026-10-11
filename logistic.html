@@ -16,15 +16,10 @@
   <div class="workspace">
     <h1>Bifurcations: The Logistic Map</h1>
 
-    <div class="flex-parent display-area">
-    </div>
+    <div id="workspace"></div>
+  </div>
 
-    <form class="edit_lab_script" novalidate>
-      <div class="flex-parent">
-        <fieldset class="flex">
-          <legend>Source</legend>
-
-          <textarea id="lab_script_source" rows="8">
+  <script type="text/plain" id="script">
 r = param(0, linspace(2, 4, 1600), 3.55);
 n = floor(param(1, colon(1, 100), 30))
 
@@ -37,22 +32,7 @@ scatter(1, I, iterate(f, n, I), I, I)
 ylim(0, [0 1])
 xlim(1, [0.45 0.55])
 ylim(1, [0.3 0.6])
-          </textarea>
-        </fieldset>
-
-        <fieldset>
-          <legend>Parameters</legend>
-
-          <ul data-params></ul>
-        </fieldset>
-      </div>
-
-      <div class="actions">
-        <input type="submit" value="Calculate" />
-      </div>
-    </form>
-  </div>
-
+  </script>
   <script type="module" src="src/index.tsx"></script>
 </body>
 </html>

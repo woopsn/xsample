@@ -7,7 +7,7 @@ export class Runner {
 
   // `listener` receives each message of this run.
   run(request: Request, listener: (message: Message) => void): void {
-    this.abandon();
+    this.stop();
 
     this.worker = new Worker(new URL("./worker.ts", import.meta.url), {
       type: "module",
@@ -16,7 +16,8 @@ export class Runner {
     this.worker.postMessage(request);
   }
 
-  private abandon(): void {
+  // Abandons the run in progress, if there is one.
+  stop(): void {
     if (!this.worker) return;
 
     // messages it has already posted may still be on their way

@@ -1,94 +1,120 @@
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ParamId } from "../fpu/events";
 import { Runner } from "../xsampler/runner";
-import { Figures } from "./Figures";
-import { draw, overlay } from "./figures";
-import type { Figures as FiguresById } from "./figures";
+import { Display } from "./Display";
+import { draw, overlay } from "./figure";
+import type { Figures } from "./figure";
 import { Parameters } from "./Parameters";
 import type { Param } from "./Parameters";
 
-interface Props {
-  // The textarea holding the script.
-  source: HTMLTextAreaElement;
-  // Where the figures go: the parameters are rendered in place.
-  display: Element;
-}
+type Values = Map<ParamId, number>;
 
-// Runs the script when it is submitted or a parameter changes, and renders
-// the figures it draws and the controls for the parameters it declares.
-export function App({ source, display }: Props) {
+// The workspace of a page: the script, the controls for the parameters it
+// declares and the figures it draws. The script runs when it is submitted
+// and when a parameter changes.
+export function App({ script }: { script: string }) {
   const [runner] = useState(() => new Runner());
+  const [source, setSource] = useState(script);
   const [params, setParams] = useState<Param[]>([]);
 
   // The values set on the controls.
-  const [values, setValues] = useState(new Map<ParamId, number>());
+  const [values, setValues] = useState<Values>(new Map());
 
-  const [figures, setFigures] = useState<FiguresById>(new Map());
+  const [figures, setFigures] = useState<Figures>(new Map());
   const frame = useRef(0);
 
-  // Shows figures at the next animation frame. Of the updates that arrive
-  // before it, only the last is drawn.
-  function show(update: (shown: FiguresById) => FiguresById) {
-    cancelAnimationFrame(frame.current);
-    frame.current = requestAnimationFrame(() => setFigures(update));
-  }
+  const run = useCallback(
+    (source: string, values: Values) => {
+      const declared: Param[] = [];
+      const drawn: Figures = new Map();
 
-  function run(values: Map<ParamId, number>) {
-    const declared: Param[] = [];
-    const drawn: FiguresById = new Map();
-
-    runner.run({ source: source.value, params: values }, (message) => {
-      switch (message.type) {
-        case "param":
-          declared.push(message);
-          break;
-
-        case "plot":
-        case "limits":
-          draw(drawn, message);
-          show((shown) => overlay(shown, drawn));
-          break;
-
-        // what the run did not declare or draw is removed
-        case "done":
-          setParams(declared);
-          show(() => drawn);
-          break;
+      // Shows figures at the next animation frame. Of the updates that
+      // arrive before it, only the last is drawn.
+      function show(update: (shown: Figures) => Figures) {
+        cancelAnimationFrame(frame.current);
+        frame.current = requestAnimationFrame(() => setFigures(update));
       }
-    });
-  }
+
+      runner.run({ source, params: values }, (message) => {
+        switch (message.type) {
+          case "param":
+            declared.push(message);
+            break;
+
+          case "plot":
+          case "limits":
+            draw(drawn, message);
+            show((shown) => overlay(shown, drawn));
+            break;
+
+          // what the run did not declare or draw is removed
+          case "done":
+            setParams(declared);
+            show(() => drawn);
+            break;
+        }
+      });
+    },
+    [runner],
+  );
+
+  useEffect(() => {
+    run(script, new Map());
+
+    return () => {
+      runner.stop();
+      cancelAnimationFrame(frame.current);
+    };
+  }, [run, runner, script]);
 
   function change(id: ParamId, value: number) {
     const changed = new Map(values).set(id, value);
 
     setValues(changed);
-    run(changed);
+    run(source, changed);
   }
-
-  useEffect(() => run(values), []);
-
-  useEffect(() => {
-    const form = source.form!;
-    const submit = (e: SubmitEvent) => {
-      e.preventDefault();
-      run(values);
-    };
-
-    form.addEventListener("submit", submit);
-    return () => form.removeEventListener("submit", submit);
-  });
 
   return (
     <>
-      {createPortal(<Figures figures={figures} />, display)}
-      <Parameters
-        params={params.map((p) => ({
-          ...p,
-          value: values.get(p.id) ?? p.value,
-        }))}
-        onChange={change}
-      />
+      <div className="flex-parent">
+        <Display figures={figures} />
+      </div>
+
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          run(source, values);
+        }}
+      >
+        <div className="flex-parent">
+          <fieldset className="flex">
+            <legend>Source</legend>
+
+            <textarea
+              rows={8}
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+            />
+          </fieldset>
+
+          <fieldset>
+            <legend>Parameters</legend>
+
+            <Parameters
+              params={params.map((p) => ({
+                ...p,
+                value: values.get(p.id) ?? p.value,
+              }))}
+              onChange={change}
+            />
+          </fieldset>
+        </div>
+
+        <div className="actions">
+          <input type="submit" value="Calculate" />
+        </div>
+      </form>
     </>
   );
 }
