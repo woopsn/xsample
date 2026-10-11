@@ -21,4 +21,6 @@ function grammar() {
 
 export default defineConfig({
   plugins: [grammar()],
+  // the worker is bundled separately, and imports the grammar too
+  worker: { plugins: () => [grammar()] },
 });

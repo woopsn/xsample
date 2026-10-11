@@ -45,7 +45,6 @@ The project is being brought back up from a prototype:
 
   - How an animation loop is written: a `for` statement, or `plot` inside
     `iterate`.
-  - How a superseded run is cancelled when a parameter changes mid-run.
 
 ## TODO
 
@@ -64,7 +63,6 @@ The project is being brought back up from a prototype:
   - implement range indexing
   - implement range assignment
   - block mkmatrix
-  - move script execution to web worker
   - scalar result "chart" is just large text
 
 ## UI
