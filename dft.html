@@ -16,15 +16,10 @@
   <div class="workspace">
     <h1>Discrete Fourier Transform</h1>
 
-    <div class="flex-parent display-area">
-    </div>
+    <div id="workspace"></div>
+  </div>
 
-    <form class="edit_lab_script" novalidate>
-      <div class="flex-parent">
-        <fieldset class="flex">
-          <legend>Source</legend>
-
-          <textarea id="lab_script_source" rows="8">
+  <script type="text/plain" id="script">
 w = param(0, linspace(0.1, 20), 1)
 n = param(1, colon(64, 512, 2), 256)
 
@@ -42,22 +37,7 @@ plot(1, f, ps / max(ps))
 
 ylim(0, [-0.3 1.3])
 ylim(1, [0 1.3])
-</textarea>
-        </fieldset>
-
-        <fieldset>
-          <legend>Parameters</legend>
-
-          <ul data-params></ul>
-        </fieldset>
-      </div>
-
-      <div class="actions">
-        <input type="submit" value="Calculate" />
-      </div>
-    </form>
-  </div>
-
+  </script>
   <script type="module" src="src/index.tsx"></script>
 </body>
 </html>

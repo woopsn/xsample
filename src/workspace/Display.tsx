@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 import type { Series } from "../fpu/events";
-import type { Figure, Figures as FiguresById } from "./figures";
+import type { Figure, Figures } from "./figure";
 
 const HEIGHT = 300;
 
@@ -18,7 +18,8 @@ const COLORS = [
   "#e34948",
 ];
 
-export function Figures({ figures }: { figures: FiguresById }) {
+// The figures of the page, each drawn with uPlot.
+export function Display({ figures }: { figures: Figures }) {
   return [...figures].map(([id, figure]) => (
     <fieldset key={id} className="display">
       <legend>Figure {id}</legend>
@@ -28,35 +29,52 @@ export function Figures({ figures }: { figures: FiguresById }) {
 }
 
 function Plot({ figure }: { figure: Figure }) {
-  const { chart, series, x, y } = figure;
-
   const element = useRef<HTMLDivElement>(null);
-  const plot = useRef<uPlot>(null);
 
-  // The chart is built again when its shape changes, and otherwise only
-  // given the new data.
+  // The chart, and what of the figure it was built for.
+  const built = useRef<{ plot: uPlot; shape: string }>(null);
+
+  // A chart is only given new data, unless the shape of the figure changed:
+  // then it is built again.
+  useEffect(() => {
+    const { chart, series, x, y } = figure;
+    const shape = JSON.stringify([chart, series.length, x, y]);
+
+    if (built.current?.shape == shape) {
+      built.current.plot.setData(align(series));
+      return;
+    }
+
+    const parent = element.current!;
+
+    built.current?.plot.destroy();
+    built.current = {
+      plot: new uPlot(
+        options(figure, parent.clientWidth),
+        align(series),
+        parent,
+      ),
+      shape,
+    };
+  }, [figure]);
+
   useEffect(() => {
     const parent = element.current!;
-    const built = new uPlot(
-      options(figure, parent.clientWidth),
-      align(series),
-      parent,
-    );
 
     const observer = new ResizeObserver(() =>
-      built.setSize({ width: parent.clientWidth, height: HEIGHT }),
+      built.current?.plot.setSize({
+        width: parent.clientWidth,
+        height: HEIGHT,
+      }),
     );
     observer.observe(parent);
 
-    plot.current = built;
-
     return () => {
       observer.disconnect();
-      built.destroy();
+      built.current?.plot.destroy();
+      built.current = null;
     };
-  }, [chart, series.length, x?.[0], x?.[1], y?.[0], y?.[1]]);
-
-  useEffect(() => plot.current!.setData(align(series)), [series]);
+  }, []);
 
   return <div ref={element} />;
 }

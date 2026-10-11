@@ -1,13 +1,16 @@
 import "./index.scss";
 
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./workspace/App";
 
-const source =
-  document.querySelector<HTMLTextAreaElement>("#lab_script_source");
-const display = document.querySelector(".display-area");
-const params = document.querySelector("[data-params]");
+const workspace = document.querySelector("#workspace");
+const script = document.querySelector("#script");
 
-// about.html has no script, and loads this for its styles
-if (source && display && params)
-  createRoot(params).render(<App source={source} display={display} />);
+// about.html has no workspace, and loads this for its styles
+if (workspace && script)
+  createRoot(workspace).render(
+    <StrictMode>
+      <App script={script.textContent.trim()} />
+    </StrictMode>,
+  );

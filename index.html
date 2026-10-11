@@ -16,33 +16,13 @@
   <div class="workspace">
     <h1>Workspace</h1>
 
-    <div class="flex-parent display-area">
-    </div>
-
-    <form class="edit_lab_script" novalidate>
-      <div class="flex-parent">
-        <fieldset class="flex">
-          <legend>Source</legend>
-
-          <textarea id="lab_script_source" rows="8">
-x = linspace(-10, 10)
-plot(0, x, exp(-(x.^2)))
-          </textarea>
-        </fieldset>
-
-        <fieldset>
-          <legend>Parameters</legend>
-
-          <ul data-params></ul>
-        </fieldset>
-      </div>
-
-      <div class="actions">
-        <input type="submit" value="Calculate" />
-      </div>
-    </form>
+    <div id="workspace"></div>
   </div>
 
+  <script type="text/plain" id="script">
+x = linspace(-10, 10)
+plot(0, x, exp(-(x.^2)))
+  </script>
   <script type="module" src="src/index.tsx"></script>
 </body>
 </html>

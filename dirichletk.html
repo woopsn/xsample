@@ -16,15 +16,10 @@
   <div class="workspace">
     <h1>Fourier Series</h1>
 
-    <div class="flex-parent display-area">
-    </div>
+    <div id="workspace"></div>
+  </div>
 
-    <form class="edit_lab_script" novalidate>
-      <div class="flex-parent">
-        <fieldset class="flex">
-          <legend>Source</legend>
-
-          <textarea id="lab_script_source" rows="8">
+  <script type="text/plain" id="script">
 n = param(0, colon(1, 500), 8)
 x = linspace(-pi, pi, 1800)
 
@@ -39,22 +34,7 @@ x2 = linspace(2*x(0), 2*x(length(x)-1), length(y))
 plot(0, x, s, x2, y)
 
 xlim(0, [-3 3]); ylim(0, [-2 2])
-          </textarea>
-        </fieldset>
-
-        <fieldset>
-          <legend>Parameters</legend>
-
-          <ul data-params></ul>
-        </fieldset>
-      </div>
-
-      <div class="actions">
-        <input type="submit" value="Calculate" />
-      </div>
-    </form>
-  </div>
-
+  </script>
   <script type="module" src="src/index.tsx"></script>
 </body>
 </html>

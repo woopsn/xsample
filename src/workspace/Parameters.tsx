@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Event, ParamId } from "../fpu/events";
 
 // A parameter as the script declared it, with the value it took.
@@ -9,16 +9,20 @@ interface Props {
   onChange: (id: ParamId, value: number) => void;
 }
 
-// One control for each parameter, as items of a list.
+// A list of the parameters, with a control for each.
 export function Parameters({ params, onChange }: Props) {
-  return params.map((param) => (
-    <li key={param.id}>
-      <Parameter
-        param={param}
-        onChange={(value) => onChange(param.id, value)}
-      />
-    </li>
-  ));
+  return (
+    <ul>
+      {params.map((param) => (
+        <li key={param.id}>
+          <Parameter
+            param={param}
+            onChange={(value) => onChange(param.id, value)}
+          />
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 // A slider over the parameter's range, and a box for typing any value.
@@ -33,6 +37,9 @@ function Parameter({
   const max = range[range.length - 1];
   const step = (max - min) / (range.length - 1);
 
+  const slider = useId();
+  const box = useId();
+
   // What is typed in the box, while it is not a number.
   const [draft, setDraft] = useState<string>();
 
@@ -43,9 +50,10 @@ function Parameter({
 
   return (
     <div className="field">
-      <label>{id}:</label>
+      <label htmlFor={slider}>{id}:</label>
       {/* the slider picks an index, as a range need not be evenly spaced */}
       <input
+        id={slider}
         type="range"
         min={0}
         max={range.length - 1}
@@ -53,8 +61,9 @@ function Parameter({
         onChange={(e) => change(range[e.target.valueAsNumber])}
       />
       <br />
-      <label>:=</label>
+      <label htmlFor={box}>:=</label>
       <input
+        id={box}
         type="number"
         min={min}
         max={max}

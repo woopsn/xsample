@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { draw, overlay } from "../src/workspace/figures";
+import { draw, overlay } from "../src/workspace/figure";
 
 const series = [{ x: Float64Array.of(1, 2), y: Float64Array.of(3, 4) }];
 
