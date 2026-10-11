@@ -1,14 +1,15 @@
 import $ from "jquery";
 import { X } from "./x";
 
-import { Machine } from "../fpu/vm";
-import { library, constants } from "../fpu/library";
-import { Script } from "../xsampler/script";
+import { Runner } from "../xsampler/runner";
 
 export function Workspace(source) {
-  this.vm = new Machine(library, constants, (event) => this.handle(event));
+  this.runner = new Runner((message) => this.handle(message));
 
-  this.script = new Script(source);
+  this.source = source;
+
+  // the values set on the controls, by parameter id
+  this.params = new Map();
 
   this.script_params = [];
   this.displays = [];
@@ -44,7 +45,15 @@ Workspace.prototype.addScriptParameter = function (id, range, value) {
         "div",
         { class: "field" },
         X("label", id + ":", { contentEditable: true }),
-        X("input", { type: "range", value: value, list: "input-" + id }),
+        // the limits come first, as the browser rounds the value to fit them
+        X("input", {
+          type: "range",
+          min: min,
+          max: max,
+          step: step,
+          value: value,
+          list: "input-" + id,
+        }),
         X("br"),
         X("label", ":="),
         X("input", { type: "number", value: value }),
@@ -56,7 +65,7 @@ Workspace.prototype.addScriptParameter = function (id, range, value) {
     param.element
       .querySelector("[type=range]")
       .addEventListener("input", function (e) {
-        workspace.vm.params.set(id, Number(e.target.value));
+        workspace.params.set(id, Number(e.target.value));
         param.element.querySelector("[type=number]").value = e.target.value;
         workspace.display();
       });
@@ -65,7 +74,7 @@ Workspace.prototype.addScriptParameter = function (id, range, value) {
       .querySelector("[type=number]")
       .addEventListener("input", function (e) {
         param.element.querySelector("[type=range]").value = e.target.value;
-        workspace.vm.params.set(id, Number(e.target.value));
+        workspace.params.set(id, Number(e.target.value));
         workspace.display();
       });
   }
@@ -87,15 +96,7 @@ Workspace.prototype.addScriptParameter = function (id, range, value) {
 };
 
 Workspace.prototype.display = function () {
-  let code = this.script.compile();
-
-  console.info(code);
-  this.vm.exec(code);
-  this.dispatch("compute");
-
-  this.displays.forEach(function (display) {
-    display.update();
-  });
+  this.runner.run({ source: this.source.value, params: this.params });
 };
 
 export function Display(element, position) {
@@ -395,7 +396,7 @@ $(document).on("click", "a[data-cancel_configure_chart]", function (e) {
   form.slideUp(200);
 });
 
-// Renders an event emitted by the running script.
+// Renders a message from the running script.
 Workspace.prototype.handle = function (event) {
   switch (event.type) {
     case "param":
@@ -445,5 +446,13 @@ Workspace.prototype.handle = function (event) {
       figure.redraw();
       break;
     }
+
+    case "done":
+      this.dispatch("compute");
+
+      this.displays.forEach(function (display) {
+        display.update();
+      });
+      break;
   }
 };
