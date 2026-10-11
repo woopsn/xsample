@@ -1,103 +1,9 @@
 import $ from "jquery";
+import Chartkick from "chartkick";
+import Chart from "chart.js/auto";
 import { X } from "./x";
 
-import { Runner } from "../xsampler/runner";
-
-export function Workspace(source) {
-  this.runner = new Runner((message) => this.handle(message));
-
-  this.source = source;
-
-  // the values set on the controls, by parameter id
-  this.params = new Map();
-
-  this.script_params = [];
-  this.displays = [];
-
-  this.listeners = {};
-
-  $(source).data("workspace", this);
-}
-
-Workspace.prototype.on = function (event, action) {
-  this.listeners[event] ||= [];
-  this.listeners[event].push(action);
-};
-
-Workspace.prototype.dispatch = function (event, data) {
-  (this.listeners[event] || []).forEach(function (action) {
-    action(data);
-  });
-};
-
-Workspace.prototype.addScriptParameter = function (id, range, value) {
-  let min = range[0],
-    max = range[range.length - 1];
-  let step = (max - min) / (range.length - 1);
-
-  let param = this.script_params[id];
-  if (!param) {
-    param = this.script_params[id] = {
-      id: id,
-      range: range,
-      value: value,
-      element: X(
-        "div",
-        { class: "field" },
-        X("label", id + ":", { contentEditable: true }),
-        // the limits come first, as the browser rounds the value to fit them
-        X("input", {
-          type: "range",
-          min: min,
-          max: max,
-          step: step,
-          value: value,
-          list: "input-" + id,
-        }),
-        X("br"),
-        X("label", ":="),
-        X("input", { type: "number", value: value }),
-        X("datalist", { id: "input-" + id }),
-      ),
-    };
-
-    let workspace = this;
-    param.element
-      .querySelector("[type=range]")
-      .addEventListener("input", function (e) {
-        workspace.params.set(id, Number(e.target.value));
-        param.element.querySelector("[type=number]").value = e.target.value;
-        workspace.display();
-      });
-
-    param.element
-      .querySelector("[type=number]")
-      .addEventListener("input", function (e) {
-        param.element.querySelector("[type=range]").value = e.target.value;
-        workspace.params.set(id, Number(e.target.value));
-        workspace.display();
-      });
-  }
-
-  let datalist = param.element.querySelector("datalist");
-  datalist.innerHTML = "";
-  range.forEach(function (e) {
-    datalist.appendChild(X("option", { value: e }));
-  });
-
-  ["range", "number"].forEach(function (type) {
-    let i = param.element.querySelector(`[type=${type}]`);
-    i.min = min;
-    i.max = max;
-    i.step = type == "range" ? step : step / 4;
-  });
-
-  return param;
-};
-
-Workspace.prototype.display = function () {
-  this.runner.run({ source: this.source.value, params: this.params });
-};
+Chartkick.use(Chart);
 
 export function Display(element, position) {
   this.url = "";
@@ -365,11 +271,6 @@ Display.prototype.fmt = function (x) {
   return x;
 };
 
-$(document).on("submit", ".new_lab_script, .edit_lab_script", function (e) {
-  e.preventDefault();
-  $("textarea", e.target).data("workspace").display();
-});
-
 $(document).on("click", "a[data-configure_chart_id]", function (e) {
   e.preventDefault();
 
@@ -396,63 +297,80 @@ $(document).on("click", "a[data-cancel_configure_chart]", function (e) {
   form.slideUp(200);
 });
 
-// Renders a message from the running script.
-Workspace.prototype.handle = function (event) {
-  switch (event.type) {
-    case "param":
-      this.addScriptParameter(event.id, event.range, event.value);
-      break;
+// The figures of the page, drawn from the messages of a run.
+export class Workspace {
+  displays = [];
 
-    case "plot": {
-      let element;
-      let id = event.figure;
+  handle(event) {
+    switch (event.type) {
+      case "plot": {
+        let element;
+        let id = event.figure;
 
-      if (this.displays[id]) {
-        element = this.displays[id].element;
-      } else {
-        element = X("fieldset", { class: "display" });
+        if (this.displays[id]) {
+          element = this.displays[id].element;
+        } else {
+          element = X("fieldset", { class: "display" });
+        }
+
+        element.id = "display-" + id;
+        element.dataset.title = "Figure " + id;
+        element.dataset.artifacts_0_name = "x";
+        element.dataset.artifacts_1_name = "y";
+        element.dataset.chart_type = event.chart;
+
+        // TODO delay reload until on compute
+        let display;
+        if ((display = this.displays[id])) display.reload();
+        else
+          display = this.displays[id] = new Display(
+            element,
+            this.displays.length,
+          );
+
+        event.series.forEach(function (series, i) {
+          display.addArtifact(2 * i).value = series.x;
+          display.addArtifact(2 * i + 1).value = series.y;
+        });
+        break;
       }
 
-      element.id = "display-" + id;
-      element.dataset.title = "Figure " + id;
-      element.dataset.artifacts_0_name = "x";
-      element.dataset.artifacts_1_name = "y";
-      element.dataset.chart_type = event.chart;
+      case "limits": {
+        let figure = this.displays[event.figure];
+        let artifact = event.axis == "x" ? 0 : 1;
 
-      // TODO delay reload until on compute
-      let display;
-      if ((display = this.displays[id])) display.reload();
-      else
-        display = this.displays[id] = new Display(
-          element,
-          this.displays.length,
-        );
+        figure.element.dataset["artifacts_" + artifact + "_min"] = event.min;
+        figure.element.dataset["artifacts_" + artifact + "_max"] = event.max;
+        figure.artifacts[artifact].min = event.min;
+        figure.artifacts[artifact].max = event.max;
+        figure.redraw();
+        break;
+      }
 
-      event.series.forEach(function (series, i) {
-        display.addArtifact(2 * i).value = series.x;
-        display.addArtifact(2 * i + 1).value = series.y;
-      });
-      break;
+      case "done": {
+        this.displays.forEach(function (d) {
+          let param =
+            d.title.replace(/\s+/g, "-").replace(/[^-\w]/g, "") +
+            "-" +
+            d.position;
+          d.element.id = "chart-" + param;
+
+          if (!$(".display-area").children("#" + d.element.id).length)
+            $(".display-area").append(d.element);
+        });
+
+        let ids = this.displays.map((d) => d.element.id);
+        $(".display-area")
+          .children()
+          .each(function () {
+            if (!ids.includes(this.id)) $(this).remove();
+          });
+
+        this.displays.forEach(function (display) {
+          display.update();
+        });
+        break;
+      }
     }
-
-    case "limits": {
-      let figure = this.displays[event.figure];
-      let artifact = event.axis == "x" ? 0 : 1;
-
-      figure.element.dataset["artifacts_" + artifact + "_min"] = event.min;
-      figure.element.dataset["artifacts_" + artifact + "_max"] = event.max;
-      figure.artifacts[artifact].min = event.min;
-      figure.artifacts[artifact].max = event.max;
-      figure.redraw();
-      break;
-    }
-
-    case "done":
-      this.dispatch("compute");
-
-      this.displays.forEach(function (display) {
-        display.update();
-      });
-      break;
   }
-};
+}
