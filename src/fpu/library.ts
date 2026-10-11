@@ -1,3 +1,4 @@
+import { emitters } from "./events";
 import { mknum } from "./value";
 import type { Value } from "./value";
 import type { Builtin } from "./vm";
@@ -12,6 +13,8 @@ function norm(x: Value): number {
 }
 
 export const library: Record<string, Builtin> = {
+  ...emitters,
+
   print(fpu, args) {
     args.forEach(function (a, i) {
       console.log("[" + i + "]", a);

@@ -1,4 +1,5 @@
 import type { BinaryOp, Node, Resolve } from "./ast";
+import type { Event, ParamId } from "./events";
 import { mknum } from "./value";
 import type { Formula, Value } from "./value";
 
@@ -11,12 +12,23 @@ export class Machine {
   library: Record<string, Builtin>;
   constants: Frame;
 
+  // Receives each event as the script emits it.
+  emit: (event: Event) => void;
+
+  // The values the host has set for the script's parameters.
+  params = new Map<ParamId, number>();
+
   // The global frame, then one for each formula being evaluated.
   frames: Frame[] = [{}];
 
-  constructor(library: Record<string, Builtin>, constants: Frame) {
+  constructor(
+    library: Record<string, Builtin>,
+    constants: Frame,
+    emit: (event: Event) => void,
+  ) {
     this.library = library;
     this.constants = constants;
+    this.emit = emit;
   }
 
   exec(ast: Node[]): void {

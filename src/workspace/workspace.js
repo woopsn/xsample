@@ -2,12 +2,11 @@ import $ from 'jquery';
 import { X } from './x';
 
 import { Machine } from "../fpu/vm";
-import { mknum } from "../fpu/value";
-import { library as fpulib, constants } from "../fpu/library";
+import { library, constants } from "../fpu/library";
 import { Script } from "../xsampler/script";
 
 export function Workspace(source) {
-		this.vm = new Machine(this.library(), constants);
+		this.vm = new Machine(library, constants, (event) => this.handle(event));
 
 		this.script = new Script(source);
 
@@ -42,23 +41,23 @@ Workspace.prototype.addScriptParameter = function(id, range, value) {
 						value: value,
 						element: X("div", { class: "field" },
 											 X("label", id+':', { contentEditable: true }),
-											 X("input", { type: "range", value: value.data[0], list: "input-"+id }),
+											 X("input", { type: "range", value: value, list: "input-"+id }),
 											 X("br"),
 											 X("label", ':='),
-											 X("input", { type: "number", value: value.data[0] }),
+											 X("input", { type: "number", value: value }),
                        X("datalist", { id: "input-"+id })),
         };
 
 				let workspace = this;
 				param.element.querySelector('[type=range]').addEventListener("input", function(e) {
-						workspace.script_params[id].value.data.fill(e.target.value);
+						workspace.vm.params.set(id, Number(e.target.value));
 						param.element.querySelector('[type=number]').value = e.target.value;
 						workspace.display();
 				});
 
 				param.element.querySelector('[type=number]').addEventListener("input", function(e) {
             param.element.querySelector('[type=range]').value = e.target.value;
-						workspace.script_params[id].value.data.fill(e.target.value);
+						workspace.vm.params.set(id, Number(e.target.value));
 						workspace.display();
 				});
     }
@@ -227,9 +226,9 @@ Display.prototype.update = function() {
         let pairs = [];
 		    let x = display.artifacts[id].value;
 
-		    x.data.forEach(function(x, i) {
+		    x.forEach(function(x, i) {
 				    let y = display.artifacts[id+1].value;
-				    pairs.push([x, y.data[i]]);
+				    pairs.push([x, y[i]]);
 		    });
 
         let ptsize = pairs.length > 30 ? 0.3 : 3;
@@ -324,16 +323,19 @@ $(document).on('click', 'a[data-cancel_configure_chart]', function(e) {
 		form.slideUp(200);
 });
 
-Workspace.prototype.library = function() {
-		let workspace = this;
+// Renders an event emitted by the running script.
+Workspace.prototype.handle = function(event) {
+		switch (event.type) {
+		case "param":
+				this.addScriptParameter(event.id, event.range, event.value);
+				break;
 
-		let chart = function(type, args) {
-				// assert args.length % 2 == 1
+		case "plot": {
 				let element;
-				let id = args[0].data[0];
+				let id = event.figure;
 
-				if (workspace.displays[id]) {
-						element = workspace.displays[id].element;
+				if (this.displays[id]) {
+						element = this.displays[id].element;
 				} else {
 						element = X("fieldset", { class: "display" });
 				}
@@ -342,77 +344,32 @@ Workspace.prototype.library = function() {
 				element.dataset.title = "Figure "+id;
 				element.dataset.artifacts_0_name = "x"
 				element.dataset.artifacts_1_name = "y"
-				element.dataset.chart_type = type;
+				element.dataset.chart_type = event.chart;
 
 				// TODO delay reload until on compute
 				let display;
-				if ((display = workspace.displays[id]))
+				if ((display = this.displays[id]))
 						display.reload();
 				else
-						display = workspace.displays[id] = new Display(element, workspace.displays.length);
+						display = this.displays[id] = new Display(element, this.displays.length);
 
-        for (let i=1; i < args.length; i += 2) {
-            display.addArtifact(i-1).value = args[i];
-            display.addArtifact(i).value = args[i+1];
-        }
-
-				return args[0];
+				event.series.forEach(function(series, i) {
+						display.addArtifact(2*i).value = series.x;
+						display.addArtifact(2*i+1).value = series.y;
+				});
+				break;
 		}
 
-		return { ...fpulib,
-				param: function(env, args) {
-						// assert args.length == 2 || args.length == 3
-						let id = args[0].data[0];
+		case "limits": {
+				let figure = this.displays[event.figure];
+				let artifact = event.axis == "x" ? 0 : 1;
 
-						// assert args[1].data.rows == 1
-						let range = args[1].data;
-
-						let value = args[2] ? args[2].data[0] : range[0];
-
-						let param = workspace.addScriptParameter(id, range, mknum(1, 1, value));
-						return param.value;
-				},
-
-				plot: function(env, args) {
-						return chart("line", args);
-				},
-
-				scatter: function(env, args) {
-						return chart("scatter", args);
-				},
-
-				table: function(env, args) {
-						return { rows: 1, cols: 1, data: [0] };
-				},
-
-        xlim: function(env, args) {
-            // assert args.length == 2
-            // assert args[1].cols == 2
-            let fid = args[0], lim = args[1];
-
-            let figure = workspace.displays[fid.data[0]];
-            figure.element.dataset.artifacts_0_min = lim.data[0];
-            figure.element.dataset.artifacts_0_max = lim.data[1];
-            figure.artifacts[0].min = lim.data[0];
-            figure.artifacts[0].max = lim.data[1];
-            figure.redraw();
-
-            return args[0];
-        },
-
-        ylim: function(env, args) {
-            // assert args.length == 2
-            // assert args[1].cols == 2
-            let fid = args[0], lim = args[1];
-
-            let figure = workspace.displays[fid.data[0]];
-            figure.element.dataset.artifacts_1_min = lim.data[0];
-            figure.element.dataset.artifacts_1_max = lim.data[1];
-            figure.artifacts[1].min = lim.data[0];
-            figure.artifacts[1].max = lim.data[1];
-            figure.redraw();
-
-            return args[0];
-        }
+				figure.element.dataset["artifacts_"+artifact+"_min"] = event.min;
+				figure.element.dataset["artifacts_"+artifact+"_max"] = event.max;
+				figure.artifacts[artifact].min = event.min;
+				figure.artifacts[artifact].max = event.max;
+				figure.redraw();
+				break;
+		}
 		}
 };

@@ -9,9 +9,19 @@ export function compile(source) {
 
 // Runs a script on a fresh machine and returns its global variables by name.
 export function run(source) {
-  const machine = new Machine(library, constants);
+  const machine = new Machine(library, constants, () => {});
   machine.exec(compile(source));
   return machine.frames[0];
+}
+
+// Runs a script and returns the events it emits. `params` is the values the
+// host has set, as [id, value] pairs.
+export function events(source, params = []) {
+  const emitted = [];
+  const machine = new Machine(library, constants, (e) => emitted.push(e));
+  machine.params = new Map(params);
+  machine.exec(compile(source));
+  return emitted;
 }
 
 // The value a script produces for the given rows:
