@@ -1,38 +1,61 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { ParamId } from "../fpu/events";
 import { Runner } from "../xsampler/runner";
-import type { Message } from "../xsampler/worker";
+import { Figures } from "./Figures";
+import { draw, overlay } from "./figures";
+import type { Figures as FiguresById } from "./figures";
 import { Parameters } from "./Parameters";
 import type { Param } from "./Parameters";
 
 interface Props {
   // The textarea holding the script.
   source: HTMLTextAreaElement;
-  // Renders the figures of a run.
-  figures: { handle(message: Message): void };
+  // Where the figures go: the parameters are rendered in place.
+  display: Element;
 }
 
 // Runs the script when it is submitted or a parameter changes, and renders
-// the controls for the parameters it declares.
-export function App({ source, figures }: Props) {
+// the figures it draws and the controls for the parameters it declares.
+export function App({ source, display }: Props) {
   const [runner] = useState(() => new Runner());
   const [params, setParams] = useState<Param[]>([]);
 
   // The values set on the controls.
   const [values, setValues] = useState(new Map<ParamId, number>());
 
+  const [figures, setFigures] = useState<FiguresById>(new Map());
+  const frame = useRef(0);
+
+  // Shows figures at the next animation frame. Of the updates that arrive
+  // before it, only the last is drawn.
+  function show(update: (shown: FiguresById) => FiguresById) {
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => setFigures(update));
+  }
+
   function run(values: Map<ParamId, number>) {
     const declared: Param[] = [];
+    const drawn: FiguresById = new Map();
 
     runner.run({ source: source.value, params: values }, (message) => {
-      if (message.type == "param") {
-        declared.push(message);
-        return;
+      switch (message.type) {
+        case "param":
+          declared.push(message);
+          break;
+
+        case "plot":
+        case "limits":
+          draw(drawn, message);
+          show((shown) => overlay(shown, drawn));
+          break;
+
+        // what the run did not declare or draw is removed
+        case "done":
+          setParams(declared);
+          show(() => drawn);
+          break;
       }
-
-      if (message.type == "done") setParams(declared);
-
-      figures.handle(message);
     });
   }
 
@@ -57,9 +80,15 @@ export function App({ source, figures }: Props) {
   });
 
   return (
-    <Parameters
-      params={params.map((p) => ({ ...p, value: values.get(p.id) ?? p.value }))}
-      onChange={change}
-    />
+    <>
+      {createPortal(<Figures figures={figures} />, display)}
+      <Parameters
+        params={params.map((p) => ({
+          ...p,
+          value: values.get(p.id) ?? p.value,
+        }))}
+        onChange={change}
+      />
+    </>
   );
 }
