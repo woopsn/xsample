@@ -1,4 +1,4 @@
-# xsampler
+# xsample
 
 A small MATLAB-like language that runs in the browser. Scripts declare
 parameters which each becomes a form control, so a figure can be explored
