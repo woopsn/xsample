@@ -6,15 +6,15 @@ parameters which each becomes a form control, so a figure can be explored
 parameters, how numerical methods behaves.
 
 ```
-n = param(0, colon(0, 2000))
-r = param(1, linspace(0, 0.55), 0.4)
+n = param("n", colon(0, 2000))
+r = param("r", linspace(0, 0.55), 0.4)
 
 x = linspace(-10, 10, 500)
 u0 = abs(x+3) < 2
 
 step = @(u) (1-2*r)*u + r*shift(u, -1) + r*shift(u, 1)
 
-plot(0, x, iterate(step, n, u0))
+plot(x, iterate(step, n, u0))
 ```
 
 ## Development
@@ -33,12 +33,9 @@ The parser is compiled from the grammar in `xsampler.p` with
 
 The project is being brought back up from a prototype:
 
-  - Tests: cover the parser, interpreter and numeric library, pinning down
-    current behaviour and known bugs before.
-  - Core engine: port to TypeScript, keep decoupled from DOM/UI dependencies
-  - Workspace: port to React, replace the jQuery/DOM-helper workspace
-  - Charts: port to uPlot, replace Chartkick/Chart.js.
   - Demos: create github pages
+  - Errors: report a script's runtime errors in the workspace; today the
+    worker stops without posting `done`, and the page shows nothing
   - **Extend**
 
 ### Open questions
