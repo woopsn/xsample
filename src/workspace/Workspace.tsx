@@ -16,7 +16,7 @@ export function Workspace({ script }: { script: string }) {
   const title = example?.title ?? "Workspace";
 
   useEffect(() => {
-    document.title = `Xsampler: ${title}`;
+    document.title = `Xsample: ${title}`;
   }, [title]);
 
   return (
