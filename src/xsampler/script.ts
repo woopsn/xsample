@@ -1,6 +1,6 @@
 import { parse } from "../../xsampler.p";
 import type { CompoundOp, Parsed, ParsedCall } from "../../xsampler.p";
-import type { BinaryOp, Call, MkFormula, Node, Resolve } from "../fpu/ast";
+import type { BinaryOp, Call, Node, Resolve } from "../fpu/ast";
 
 // Where a script's text is read from, such as a textarea.
 export interface Source {
@@ -47,8 +47,12 @@ function desugar(node: Parsed): Node {
       return { ...node, args: node.args.map(desugar) };
 
     case "$mkformula":
-      // formula bodies are not desugared
-      return node as MkFormula;
+      // the grammar accepts any expression as a parameter, not just a name
+      return {
+        ...node,
+        params: node.params as Resolve[],
+        formula: desugar(node.formula),
+      };
 
     case "=":
       return assign(node.lhs, desugar(node.rhs));

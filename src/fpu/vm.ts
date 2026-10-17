@@ -254,6 +254,10 @@ function binary(operator: BinaryOp, lhs: Value, rhs: Value): Value {
       for (let i = 0; i < lhs.data.length; i++)
         value.data[i] = Math.pow(lhs.data[i], rhs.data[i]);
       break;
+    case "s.^":
+      for (let i = 0; i < rhs.data.length; i++)
+        value.data[i] = Math.pow(lhs.data[0], rhs.data[i]);
+      break;
     case ".^s":
       for (let i = 0; i < lhs.data.length; i++)
         value.data[i] = Math.pow(lhs.data[i], rhs.data[0]);
@@ -311,7 +315,7 @@ function binary(operator: BinaryOp, lhs: Value, rhs: Value): Value {
       for (let i = 0; i < rhs.data.length; i++)
         value.data[i] = Number(lhs.data[0] <= rhs.data[i]);
       break;
-    case "<s=":
+    case "<=s":
       for (let i = 0; i < lhs.data.length; i++)
         value.data[i] = Number(lhs.data[i] <= rhs.data[0]);
       break;
@@ -342,6 +346,39 @@ function binary(operator: BinaryOp, lhs: Value, rhs: Value): Value {
         value.data[i] = Number(lhs.data[i] >= rhs.data[0]);
       break;
 
+    case "|":
+      for (let i = 0; i < lhs.data.length; i++)
+        value.data[i] = Number(lhs.data[i] != 0 || rhs.data[i] != 0);
+      break;
+    case "s|":
+      for (let i = 0; i < rhs.data.length; i++)
+        value.data[i] = Number(lhs.data[0] != 0 || rhs.data[i] != 0);
+      break;
+    case "|s":
+      for (let i = 0; i < lhs.data.length; i++)
+        value.data[i] = Number(lhs.data[i] != 0 || rhs.data[0] != 0);
+      break;
+
+    case "&":
+      for (let i = 0; i < lhs.data.length; i++)
+        value.data[i] = Number(lhs.data[i] != 0 && rhs.data[i] != 0);
+      break;
+    case "s&":
+      for (let i = 0; i < rhs.data.length; i++)
+        value.data[i] = Number(lhs.data[0] != 0 && rhs.data[i] != 0);
+      break;
+    case "&s":
+      for (let i = 0; i < lhs.data.length; i++)
+        value.data[i] = Number(lhs.data[i] != 0 && rhs.data[0] != 0);
+      break;
+
+    // `!x` is `0 ! x`, so the zero on the left is ignored
+    case "!":
+    case "s!":
+      for (let i = 0; i < rhs.data.length; i++)
+        value.data[i] = Number(!rhs.data[i]);
+      break;
+
     default:
       throw "unknown operator: " + op;
   }
@@ -367,10 +404,25 @@ function bind(params: Resolve[], args: Value[]): Frame {
   return frame;
 }
 
+// `a(k)` selects the elements of a at the indices in k, in the shape of k;
+// `a(i, j)` selects those in rows i and columns j.
 function index(num: Value, index: Value[]): Value {
-  const idx = index[0];
-  const value = mknum(idx.rows, idx.cols);
+  if (index.length == 1) {
+    const [k] = index;
+    const value = mknum(k.rows, k.cols);
 
-  value.data[0] = num.data[idx.data[0]];
+    for (let n = 0; n < k.data.length; ++n) value.data[n] = num.data[k.data[n]];
+
+    return value;
+  }
+
+  const [i, j] = index;
+  const value = mknum(i.data.length, j.data.length);
+
+  for (let m = 0; m < i.data.length; ++m)
+    for (let n = 0; n < j.data.length; ++n)
+      value.data[m * value.cols + n] =
+        num.data[i.data[m] * num.cols + j.data[n]];
+
   return value;
 }
