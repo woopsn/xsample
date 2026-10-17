@@ -39,10 +39,8 @@ describe("desugaring", () => {
       { op: "$call", sym: "transpose", args: [variable("x")] },
     ]);
   });
-});
 
-describe("known bugs", () => {
-  test.fails("formula bodies are desugared", () => {
+  test("formula bodies are desugared", () => {
     const [{ formula }] = compile("@(n) 0:n");
 
     expect(formula).toEqual(compile("0:n")[0]);

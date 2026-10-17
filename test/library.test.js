@@ -31,6 +31,12 @@ describe("constructors", () => {
       matrix([0, 1], [10, 11]),
     );
   });
+
+  test("matrix fills a non-square result", () => {
+    expect(run("x = matrix(2, 3, @(i, j) 10*i + j)").x).toEqual(
+      matrix([0, 1, 2], [10, 11, 12]),
+    );
+  });
 });
 
 describe("reductions", () => {
@@ -52,6 +58,14 @@ describe("reductions", () => {
 
   test("max spans all of its arguments", () => {
     expect(run("x = max(1, [2, 7])").x).toEqual(scalar(7));
+  });
+
+  test("min of positive numbers", () => {
+    expect(run("x = min([3, 2, 5])").x).toEqual(scalar(2));
+  });
+
+  test("max of negative numbers", () => {
+    expect(run("x = max([-3, -2])").x).toEqual(scalar(-2));
   });
 });
 
@@ -125,24 +139,8 @@ describe("Fourier transform", () => {
       closeTo([h, h, h, -h]),
     );
   });
-});
 
-describe("known bugs", () => {
-  test.fails("min of positive numbers", () => {
-    expect(run("x = min([3, 2, 5])").x).toEqual(scalar(2));
-  });
-
-  test.fails("max of negative numbers", () => {
-    expect(run("x = max([-3, -2])").x).toEqual(scalar(-2));
-  });
-
-  test.fails("matrix fills a non-square result", () => {
-    expect(run("x = matrix(2, 3, @(i, j) 10*i + j)").x).toEqual(
-      matrix([0, 1, 2], [10, 11, 12]),
-    );
-  });
-
-  test.fails("dft_i is the imaginary part of the unitary DFT matrix", () => {
+  test("dft_i is the imaginary part of the unitary DFT matrix", () => {
     expect(Array.from(run("x = dft_i(4)").x.data).slice(4, 8)).toEqual(
       closeTo([0, -0.5, 0, 0.5]),
     );

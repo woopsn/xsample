@@ -82,7 +82,7 @@ export const library: Record<string, Builtin> = {
       data = result.data;
 
     for (let i = 0; i < m; ++i) {
-      const irow = i * m;
+      const irow = i * n;
       idxi_data[0] = i;
       for (let j = 0; j < n; ++j) {
         idxj_data[0] = j;
@@ -103,7 +103,7 @@ export const library: Record<string, Builtin> = {
   },
 
   min(fpu, args) {
-    const result = mknum(1, 1);
+    const result = mknum(1, 1, Infinity);
 
     // assert args.length > 1
     for (let i = 0; i < args.length; ++i)
@@ -114,7 +114,7 @@ export const library: Record<string, Builtin> = {
   },
 
   max(fpu, args) {
-    const result = mknum(1, 1);
+    const result = mknum(1, 1, -Infinity);
 
     // assert args.length > 1
     for (let i = 0; i < args.length; ++i)
@@ -279,8 +279,7 @@ export const library: Record<string, Builtin> = {
       nsqrt = Math.sqrt(n);
 
     for (let i = 0; i < n; ++i)
-      for (let j = 0; j < n; ++j)
-        data[i * n + j] = -Math.sin(c * i * j) / nsqrt;
+      for (let j = 0; j < n; ++j) data[i * n + j] = Math.sin(c * i * j) / nsqrt;
 
     return result;
   },

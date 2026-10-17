@@ -114,10 +114,8 @@ describe("statements", () => {
   test("there is no comment syntax", () => {
     expect(() => parse("x = 1 # one")).toThrow(SyntaxError);
   });
-});
 
-describe("known bugs", () => {
-  test.fails("... continues a statement on the next line", () => {
+  test("... continues a statement on the next line", () => {
     expect(parse("1 ...\n + 2")).toEqual(parse("1 + 2"));
   });
 });

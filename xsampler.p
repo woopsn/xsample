@@ -6,6 +6,27 @@
 		}
 }}
 
+{
+		// Whether the sign before `offset` starts an element of a matrix: it
+		// is preceded by whitespace and followed by none, and the innermost
+		// bracket open around it is a "[".
+		function startsElement(offset) {
+				if (!/[ \t]/.test(input[offset - 2]) || /\s/.test(input[offset]))
+						return false;
+
+				let depth = 0;
+				for (let i = offset - 2; i >= 0; --i) {
+						if (input[i] == ")" || input[i] == "]") depth++;
+						else if (input[i] == "(" || input[i] == "[") {
+								if (depth == 0) return input[i] == "[";
+								depth--;
+						}
+				}
+
+				return false;
+		}
+}
+
 Program = Statement*
 
 Statement = expr:Expression semi { return expr; }
@@ -83,12 +104,14 @@ setop = "."? ("=" / "+=" / "-=" / "*=" / "/=" / "|=" / "&=" / "^=") { return tex
 logop = "."? ("||" / "|" / "&&" / "&") { return text(); }
 rngop = ":" { return text(); }
 cmpop = ("<=" / "<" / ">=" / ">" / "==" / "!=") { return text(); }
-addop = ("+" / "-") { return text(); }
+// Inside a matrix, a sign after whitespace and before none starts a new
+// element: [1 -1] has two elements, and [1 - 1] and [1-1] have one.
+addop = op:("+" / "-") !{ return startsElement(offset()); } { return op; }
 mulop = "."? ("*" / "/") { return text(); }
 expop = "."? ("^") { return text(); }
 
 _ "whitespace"
-  = [ \t\r]* / "..." [\r\n]+
+  = ([ \t\r] / "..." [\r\n]+)*
 
 semi
   = [\r\n]+ / ";" _ [\r\n]* / !.

@@ -48,6 +48,14 @@ describe("arithmetic", () => {
   test("unary minus negates every element", () => {
     expect(run("x = -[1, 2]").x).toEqual(matrix([-1, -2]));
   });
+
+  test("whitespace separates a signed matrix element", () => {
+    expect(run("x = [1 -1]").x).toEqual(matrix([1, -1]));
+  });
+
+  test(".^ takes a scalar base", () => {
+    expect(run("x = 2 .^ [1, 2, 3]").x).toEqual(matrix([2, 4, 8]));
+  });
 });
 
 describe("matrix product", () => {
@@ -80,6 +88,27 @@ describe("comparison", () => {
     expect(run("x = [1, 2] == [1, 3]").x).toEqual(matrix([1, 0]));
     expect(run("x = [1, 2, 3] >= 2").x).toEqual(matrix([0, 1, 1]));
     expect(run("x = 2 <= [1, 2, 3]").x).toEqual(matrix([0, 1, 1]));
+  });
+
+  test("a matrix compares <= against a scalar", () => {
+    expect(run("x = [1, 2, 3] <= 2").x).toEqual(matrix([1, 1, 0]));
+  });
+});
+
+describe("logic", () => {
+  test("yields 1 for true and 0 for false", () => {
+    expect(run("x = 1 | 0").x).toEqual(scalar(1));
+    expect(run("x = 2 & 0").x).toEqual(scalar(0));
+  });
+
+  test("is elementwise", () => {
+    expect(run("x = [1, 0, 0] | [0, 0, 1]").x).toEqual(matrix([1, 0, 1]));
+    expect(run("x = [1, 2, 0] & 3").x).toEqual(matrix([1, 1, 0]));
+  });
+
+  test("! negates", () => {
+    expect(run("x = !1").x).toEqual(scalar(0));
+    expect(run("x = ![0, 2]").x).toEqual(matrix([1, 0]));
   });
 });
 
@@ -120,6 +149,14 @@ describe("indexing", () => {
       matrix([1, 2], [9, 4]),
     );
   });
+
+  test("a vector index selects several elements", () => {
+    expect(run("a = [4, 5, 6]\nx = a([0, 1])").x).toEqual(matrix([4, 5]));
+  });
+
+  test("two indices select by row and column", () => {
+    expect(run("a = [1, 2; 3, 4]\nx = a(1, 0)").x).toEqual(scalar(3));
+  });
 });
 
 describe("formulas", () => {
@@ -134,38 +171,8 @@ describe("formulas", () => {
   test("parameters shadow variables of the same name", () => {
     expect(run("a = 1\nf = @(a) a + 1\nx = f(5)").x).toEqual(scalar(6));
   });
-});
 
-describe("known bugs", () => {
-  test.fails("whitespace separates a signed matrix element", () => {
-    expect(run("x = [1 -1]").x).toEqual(matrix([1, -1]));
-  });
-
-  test.fails("a matrix compares <= against a scalar", () => {
-    expect(run("x = [1, 2, 3] <= 2").x).toEqual(matrix([1, 1, 0]));
-  });
-
-  test.fails(".^ takes a scalar base", () => {
-    expect(run("x = 2 .^ [1, 2, 3]").x).toEqual(matrix([2, 4, 8]));
-  });
-
-  test.fails("logical operators evaluate", () => {
-    expect(run("x = 1 | 0").x).toEqual(scalar(1));
-  });
-
-  test.fails("unary ! negates", () => {
-    expect(run("x = !1").x).toEqual(scalar(0));
-  });
-
-  test.fails("a vector index selects several elements", () => {
-    expect(run("a = [4, 5, 6]\nx = a([0, 1])").x).toEqual(matrix([4, 5]));
-  });
-
-  test.fails("two indices select by row and column", () => {
-    expect(run("a = [1, 2; 3, 4]\nx = a(1, 0)").x).toEqual(scalar(3));
-  });
-
-  test.fails("a formula can use a range", () => {
+  test("a formula can use a range", () => {
     expect(run("f = @(n) 0:n\nx = f(2)").x).toEqual(matrix([0, 1, 2]));
   });
 });
