@@ -22,7 +22,10 @@ const COLORS = [
 export function Display({ figures }: { figures: Figures }) {
   return [...figures].map(([id, figure]) => (
     <fieldset key={id} className="display">
-      <legend>Figure {id}</legend>
+      <legend>
+        Figure {id}
+        {figure.name && `: ${figure.name}`}
+      </legend>
       <Plot figure={figure} />
     </fieldset>
   ));

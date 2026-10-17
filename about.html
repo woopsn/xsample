@@ -67,8 +67,9 @@
       <table>
         <caption>Figure manipulation</caption>
         <tr><td><tt>param(name, range, initial=range(0))</tt></td><td>A control over the range, and its value</td></tr>
-        <tr><td><tt>plot(fid, X1, Y1, X2, Y2, ...)</tt>, <br /><tt>scatter(fid, X1, Y1, X2, Y2, ...)</tt>, <br /><tt>table(fid, X1, Y1, X2, Y2, ...)</tt></td><td>Add XY data to figure</td></tr>
-        <tr><td><tt>xlim(fid, limits)</tt>, <br /><tt>ylim(fid, limits)</td><td></td></tr>
+        <tr><td><tt>figure(fid, "name", name)</tt></td><td>Make a figure current (figure 1 is, at first), and name it</td></tr>
+        <tr><td><tt>plot(X1, Y1, X2, Y2, ...)</tt>, <br /><tt>scatter(X1, Y1, X2, Y2, ...)</tt></td><td>Draw XY data on the current figure</td></tr>
+        <tr><td><tt>xlim(limits)</tt>, <br /><tt>ylim(limits)</tt></td><td>Fix an axis of the current figure</td></tr>
       </table>
     </fieldset>
   </div>

@@ -10,9 +10,15 @@ export interface Series {
   y: Float64Array;
 }
 
+// What `figure` can set of a figure, besides what it plots.
+export interface FigureProperties {
+  name?: string;
+}
+
 // What a running script tells its host, which is what renders it.
 export type Event =
   | { type: "param"; id: ParamId; range: Float64Array; value: number }
+  | { type: "figure"; figure: number; properties: FigureProperties }
   | {
       type: "plot";
       figure: number;
@@ -27,30 +33,31 @@ export type Event =
       max: number;
     };
 
-// `plot(fid, X1, Y1, X2, Y2, ...)` draws a figure with one series per pair.
+// `plot(X1, Y1, X2, Y2, ...)` draws the current figure with one series per
+// pair.
 function chart(type: "line" | "scatter"): Builtin {
   return (vm, args) => {
-    // assert args.length % 2 == 1
+    // assert args.length % 2 == 0
     const series: Series[] = [];
 
     // the data is copied, as the script may go on to change it
-    for (let i = 1; i < args.length; i += 2)
+    for (let i = 0; i < args.length; i += 2)
       series.push({ x: args[i].data.slice(), y: args[i + 1].data.slice() });
 
-    vm.emit({ type: "plot", figure: args[0].data[0], chart: type, series });
+    vm.emit({ type: "plot", figure: vm.figure, chart: type, series });
 
-    return args[0];
+    return mknum(1, 1, vm.figure);
   };
 }
 
-// `xlim(fid, [min max])` fixes the extent of a figure's axis.
+// `xlim([min max])` fixes the extent of the current figure's axis.
 function limits(axis: "x" | "y"): Builtin {
   return (vm, args) => {
-    // assert args.length == 2
-    // assert args[1].cols == 2
-    const [min, max] = args[1].data;
+    // assert args.length == 1
+    // assert args[0].cols == 2
+    const [min, max] = args[0].data;
 
-    vm.emit({ type: "limits", figure: args[0].data[0], axis, min, max });
+    vm.emit({ type: "limits", figure: vm.figure, axis, min, max });
 
     return args[0];
   };
@@ -73,6 +80,29 @@ export const emitters: Record<string, Builtin> = {
     vm.emit({ type: "param", id, range: range.slice(), value });
 
     return mknum(1, 1, value);
+  },
+
+  // `figure(id, "name", name)` makes a figure the current one, which later
+  // plots draw, and sets its properties.
+  figure(vm, args) {
+    // assert args.length % 2 == 1
+    const properties: FigureProperties = {};
+
+    for (let i = 1; i < args.length; i += 2) {
+      const [property, value] = [args[i], args[i + 1]];
+
+      if (!property.text) throw "figure: a property must be named by a string";
+      if (stringOf(property) != "name")
+        throw "figure: unknown property: " + stringOf(property);
+      if (!value?.text) throw "figure: the name must be a string";
+
+      properties.name = stringOf(value);
+    }
+
+    vm.figure = args[0].data[0];
+    vm.emit({ type: "figure", figure: vm.figure, properties });
+
+    return args[0];
   },
 
   plot: chart("line"),

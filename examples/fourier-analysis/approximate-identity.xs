@@ -12,5 +12,8 @@ se = conv(s, e) / (length(x)/2)
 
 x2 = linspace(-2*pi, 2*pi, length(se))
 
-plot(0, x, e)
-plot(1, x, s, x2, se)
+figure(1, "name", "Kernel")
+plot(x, e)
+
+figure(2, "name", "Convolution")
+plot(x, s, x2, se)

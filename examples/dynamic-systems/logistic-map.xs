@@ -7,9 +7,11 @@ n = floor(param("n", colon(1, 100), 30))
 f = @(x) r*x.*(1-x);
 
 I = linspace(0, 1, 4000);
-scatter(0, I, iterate(f, n, I), I, I)
-scatter(1, I, iterate(f, n, I), I, I)
+figure(1, "name", "Orbits")
+scatter(I, iterate(f, n, I), I, I)
+ylim([0 1])
 
-ylim(0, [0 1])
-xlim(1, [0.45 0.55])
-ylim(1, [0.3 0.6])
+figure(2, "name", "Detail")
+scatter(I, iterate(f, n, I), I, I)
+xlim([0.45 0.55])
+ylim([0.3 0.6])

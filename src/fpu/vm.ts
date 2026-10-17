@@ -18,6 +18,10 @@ export class Machine {
   // The values the host has set for the script's parameters.
   params = new Map<ParamId, number>();
 
+  // The figure that `plot`, `scatter`, `xlim` and `ylim` draw on, which
+  // `figure` changes.
+  figure = 1;
+
   // The global frame, then one for each formula being evaluated.
   frames: Frame[] = [{}];
 

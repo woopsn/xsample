@@ -41,6 +41,7 @@ export function App({ script }: { script: string }) {
             declared.push(message);
             break;
 
+          case "figure":
           case "plot":
           case "limits":
             draw(drawn, message);

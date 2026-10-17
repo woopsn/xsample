@@ -29,12 +29,48 @@ describe("param", () => {
   });
 });
 
+describe("figure", () => {
+  test("emits the figure's properties", () => {
+    expect(events('figure(2, "name", "Orbits")')).toEqual([
+      { type: "figure", figure: 2, properties: { name: "Orbits" } },
+    ]);
+  });
+
+  test("may set no properties", () => {
+    expect(events("figure(2)")).toEqual([
+      { type: "figure", figure: 2, properties: {} },
+    ]);
+  });
+
+  test("makes a figure the one that later calls draw on", () => {
+    const [, plot, limits] = events("figure(2); plot([1], [2]); xlim([0 1])");
+
+    expect([plot.figure, limits.figure]).toEqual([2, 2]);
+  });
+
+  test("rejects an unknown property", () => {
+    expect(() => run('figure(1, "color", 2)')).toThrow(
+      "figure: unknown property: color",
+    );
+  });
+
+  test("rejects a name that is not a string", () => {
+    expect(() => run('figure(1, "name", 2)')).toThrow(
+      "figure: the name must be a string",
+    );
+  });
+});
+
 describe("plot", () => {
+  test("draws figure 1 until another is chosen", () => {
+    expect(events("plot([1], [2])")[0].figure).toBe(1);
+  });
+
   test("emits one series for each pair of arguments", () => {
-    expect(events("plot(0, [1, 2], [3, 4], [5, 6], [7, 8])")).toEqual([
+    expect(events("plot([1, 2], [3, 4], [5, 6], [7, 8])")).toEqual([
       {
         type: "plot",
-        figure: 0,
+        figure: 1,
         chart: "line",
         series: [
           { x: Float64Array.of(1, 2), y: Float64Array.of(3, 4) },
@@ -45,13 +81,13 @@ describe("plot", () => {
   });
 
   test("scatter emits a scatter chart", () => {
-    const [event] = events("scatter(1, [1, 2], [3, 4])");
+    const [event] = events("scatter([1, 2], [3, 4])");
 
-    expect(event).toMatchObject({ figure: 1, chart: "scatter" });
+    expect(event).toMatchObject({ chart: "scatter" });
   });
 
   test("emits a frame each time a figure is plotted", () => {
-    const frames = events("x = [1, 2]; plot(0, x, x); x(0) = 5; plot(0, x, x)");
+    const frames = events("x = [1, 2]; plot(x, x); x(0) = 5; plot(x, x)");
 
     expect(frames.map((frame) => frame.series[0].x)).toEqual([
       Float64Array.of(1, 2),
@@ -62,8 +98,8 @@ describe("plot", () => {
 
 describe("xlim and ylim", () => {
   test("emit the limits of an axis", () => {
-    expect(events("xlim(0, [-3, 3]); ylim(1, [0, 2])")).toEqual([
-      { type: "limits", figure: 0, axis: "x", min: -3, max: 3 },
+    expect(events("xlim([-3, 3]); ylim([0, 2])")).toEqual([
+      { type: "limits", figure: 1, axis: "x", min: -3, max: 3 },
       { type: "limits", figure: 1, axis: "y", min: 0, max: 2 },
     ]);
   });

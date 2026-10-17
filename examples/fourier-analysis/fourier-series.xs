@@ -12,6 +12,6 @@ s = (abs(x+2) < w) - (abs(x+1) < w) + (abs(x) < w) + (abs(x-1) < w) - (abs(x-2) 
 y = conv(dkn, s) / length(x)
 x2 = linspace(2*x(0), 2*x(length(x)-1), length(y))
 
-plot(0, x, s, x2, y)
+plot(x, s, x2, y)
 
-xlim(0, [-3 3]); ylim(0, [-2 2])
+xlim([-3 3]); ylim([-2 2])

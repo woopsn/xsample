@@ -11,5 +11,5 @@ u0 += 1/2 * (abs(x) < 1/2)
 
 step = @(u) (1-2*r)*u + r*shift(u, -1) + r*shift(u, 1)
 
-plot(0, x, iterate(step, n, u0))
-ylim(0, [0 1.3])
+plot(x, iterate(step, n, u0))
+ylim([0 1.3])

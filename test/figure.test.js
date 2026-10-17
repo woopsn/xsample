@@ -11,6 +11,10 @@ function limits(figure, axis, min, max) {
   return { type: "limits", figure, axis, min, max };
 }
 
+function figure(figure, properties) {
+  return { type: "figure", figure, properties };
+}
+
 // The figures of a run that emits the given events.
 function drawn(...events) {
   const figures = new Map();
@@ -23,6 +27,20 @@ describe("draw", () => {
     expect(drawn(plot(0, "scatter"))).toEqual(
       new Map([[0, { chart: "scatter", series }]]),
     );
+  });
+
+  test("figure names a figure, which keeps its name when plotted", () => {
+    expect(drawn(figure(0, { name: "Orbits" }), plot(0)).get(0)).toEqual({
+      chart: "line",
+      series,
+      name: "Orbits",
+    });
+  });
+
+  test("figure without properties keeps the name", () => {
+    expect(
+      drawn(figure(0, { name: "Orbits" }), figure(0, {})).get(0).name,
+    ).toBe("Orbits");
   });
 
   test("plotting a figure again replaces its series", () => {
