@@ -2,12 +2,16 @@ import { describe, expect, test } from "vitest";
 import { matrix, run, scalar } from "./helpers";
 
 describe("strings", () => {
-  test("are rows of character codes", () => {
-    expect(run('x = "ab"').x).toEqual(matrix([97, 98]));
+  test("are rows of character codes, marked as text", () => {
+    expect(run('x = "ab"').x).toEqual({ ...matrix([97, 98]), text: true });
   });
 
   test("count a character outside the BMP as one", () => {
-    expect(run('x = "π😀"').x).toEqual(matrix([0x3c0, 0x1f600]));
+    expect(run('x = "π😀"').x.data).toEqual(Float64Array.of(0x3c0, 0x1f600));
+  });
+
+  test("arithmetic on a string yields numbers", () => {
+    expect(run('x = "a" + 1').x).toEqual(scalar(98));
   });
 
   test("may be empty", () => {

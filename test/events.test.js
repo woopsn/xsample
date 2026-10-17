@@ -16,6 +16,12 @@ describe("param", () => {
     expect(run('x = param("n", [1, 2, 3])').x).toEqual(scalar(1));
   });
 
+  test("is named by a string", () => {
+    expect(() => run("param(0, [1, 2, 3])")).toThrow(
+      "param: the name must be a string",
+    );
+  });
+
   test("evaluates to the value the host has set", () => {
     const [event] = events('param("n", [1, 2, 3], 2)', [["n", 3]]);
 

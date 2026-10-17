@@ -7,12 +7,13 @@ export interface Formula {
 }
 
 // Every value is a matrix in row-major order; a scalar is 1x1, and a string
-// is a row of character codes.
+// is a row of character codes marked as text.
 export interface Value {
   rows: number;
   cols: number;
   data: Float64Array;
   formula?: Formula;
+  text?: true;
 }
 
 export function mknum(rows: number, cols: number, val?: number): Value {
@@ -23,7 +24,7 @@ export function mknum(rows: number, cols: number, val?: number): Value {
 
 export function mkstring(text: string): Value {
   const codes = Float64Array.from(text, (c) => c.codePointAt(0)!);
-  return { rows: 1, cols: codes.length, data: codes };
+  return { rows: 1, cols: codes.length, data: codes, text: true };
 }
 
 // The text of a string value.

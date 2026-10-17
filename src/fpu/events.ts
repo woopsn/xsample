@@ -63,6 +63,8 @@ export const emitters: Record<string, Builtin> = {
   param(vm, args) {
     // assert args.length == 2 || args.length == 3
     // assert args[1].rows == 1
+    if (!args[0].text) throw "param: the name must be a string";
+
     const id = stringOf(args[0]);
     const range = args[1].data;
     const initial = args[2] ? args[2].data[0] : range[0];
