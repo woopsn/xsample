@@ -1,8 +1,8 @@
 ---
 title: Fourier Transform
 ---
-w = param(0, linspace(0.1, 20), 1)
-n = param(1, colon(64, 512, 2), 256)
+w = param("w", linspace(0.1, 20), 1)
+n = param("n", colon(64, 512, 2), 256)
 
 t = linspace(-2*pi, 2*pi, n)
 y = transpose(sin(w*pi*t) ./ (w*pi*t))

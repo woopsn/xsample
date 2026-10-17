@@ -1,7 +1,7 @@
 // Types for the parser that the plugin in vite.config.js compiles from
 // xsampler.p.
 
-import type { BinaryOp, MkScalar, Resolve } from "./src/fpu/ast";
+import type { BinaryOp, MkScalar, MkString, Resolve } from "./src/fpu/ast";
 
 export interface ParsedCall {
   op: "$call";
@@ -40,6 +40,7 @@ export interface ParsedAssignment {
 export type Parsed =
   | Resolve
   | MkScalar
+  | MkString
   | ParsedCall
   | ParsedMatrix
   | ParsedFormula

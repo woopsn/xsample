@@ -38,6 +38,7 @@ function desugar(node: Parsed): Node {
   switch (node.op) {
     case "$resolve":
     case "$mkscalar":
+    case "$mkstring":
       return node;
 
     case "$call":

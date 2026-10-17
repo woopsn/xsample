@@ -1,8 +1,8 @@
 ---
 title: Heat Equation
 ---
-n = param(0, colon(0, 2000))
-r = param(1, linspace(0, 0.55), 0.4)
+n = param("n", colon(0, 2000))
+r = param("r", linspace(0, 0.55), 0.4)
 
 x = linspace(-10, 10, 500)
 

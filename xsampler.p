@@ -14,11 +14,16 @@
 				if (!/[ \t]/.test(input[offset - 2]) || /\s/.test(input[offset]))
 						return false;
 
+				// brackets in strings and comments do not count
+				const code = input
+						.slice(0, offset - 1)
+						.replace(/"[^"\r\n]*"|[%#][^\r\n]*/g, "");
+
 				let depth = 0;
-				for (let i = offset - 2; i >= 0; --i) {
-						if (input[i] == ")" || input[i] == "]") depth++;
-						else if (input[i] == "(" || input[i] == "[") {
-								if (depth == 0) return input[i] == "[";
+				for (let i = code.length - 1; i >= 0; --i) {
+						if (code[i] == ")" || code[i] == "]") depth++;
+						else if (code[i] == "(" || code[i] == "[") {
+								if (depth == 0) return code[i] == "[";
 								depth--;
 						}
 				}
@@ -27,7 +32,7 @@
 		}
 }
 
-Program = Statement*
+Program = __ statements:Statement* { return statements; }
 
 Statement = expr:Expression semi { return expr; }
 
@@ -54,6 +59,7 @@ Term
 	/ Formula
 	/ VariableOrCall
   / Numeric
+  / String
 
 Formula
   = "@" args:Args expr:Expression {
@@ -94,6 +100,10 @@ MatrixRow
 			return [head, ...tail.map(function(e) { return e[3]; })];
 	}
 
+// A string is a row of character codes; it cannot span lines.
+String "string"
+  = '"' value:$[^"\r\n]* '"' { return { op: "$mkstring", value }; }
+
 Integer "integer"
 	= [0-9]+ { return { op: "$mkscalar", value: parseInt(text()) } }
 
@@ -110,8 +120,14 @@ addop = op:("+" / "-") !{ return startsElement(offset()); } { return op; }
 mulop = "."? ("*" / "/") { return text(); }
 expop = "."? ("^") { return text(); }
 
+// A comment runs from % or # to the end of the line.
+comment = [%#] [^\r\n]*
+
 _ "whitespace"
-  = ([ \t\r] / "..." [\r\n]+)*
+  = ([ \t\r] / "..." [\r\n]+ / comment)*
+
+// Whitespace, comments and blank lines.
+__ = ([ \t\r\n] / comment)*
 
 semi
-  = [\r\n]+ / ";" _ [\r\n]* / !.
+  = (";" / [\r\n]) __ / !.

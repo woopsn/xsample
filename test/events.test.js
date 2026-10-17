@@ -3,21 +3,21 @@ import { events, run, scalar } from "./helpers";
 
 describe("param", () => {
   test("declares a parameter over its range", () => {
-    expect(events("param(0, [1, 2, 3], 2)")).toEqual([
-      { type: "param", id: 0, range: Float64Array.of(1, 2, 3), value: 2 },
+    expect(events('param("n", [1, 2, 3], 2)')).toEqual([
+      { type: "param", id: "n", range: Float64Array.of(1, 2, 3), value: 2 },
     ]);
   });
 
   test("evaluates to its initial value", () => {
-    expect(run("x = param(0, [1, 2, 3], 2)").x).toEqual(scalar(2));
+    expect(run('x = param("n", [1, 2, 3], 2)').x).toEqual(scalar(2));
   });
 
   test("starts at the bottom of its range by default", () => {
-    expect(run("x = param(0, [1, 2, 3])").x).toEqual(scalar(1));
+    expect(run('x = param("n", [1, 2, 3])').x).toEqual(scalar(1));
   });
 
   test("evaluates to the value the host has set", () => {
-    const [event] = events("param(0, [1, 2, 3], 2)", [[0, 3]]);
+    const [event] = events('param("n", [1, 2, 3], 2)', [["n", 3]]);
 
     expect(event.value).toBe(3);
   });

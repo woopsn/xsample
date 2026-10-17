@@ -32,6 +32,11 @@ export interface MkScalar {
   value: number;
 }
 
+export interface MkString {
+  op: "$mkstring";
+  value: string;
+}
+
 // `args` holds the elements of all `rows` rows, in row-major order.
 export interface MkMatrix {
   op: "$mkmatrix";
@@ -83,6 +88,7 @@ export type Node =
   | Register
   | SetElement
   | MkScalar
+  | MkString
   | MkMatrix
   | MkFormula
   | Binary;

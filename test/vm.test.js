@@ -1,6 +1,20 @@
 import { describe, expect, test } from "vitest";
 import { matrix, run, scalar } from "./helpers";
 
+describe("strings", () => {
+  test("are rows of character codes", () => {
+    expect(run('x = "ab"').x).toEqual(matrix([97, 98]));
+  });
+
+  test("count a character outside the BMP as one", () => {
+    expect(run('x = "π😀"').x).toEqual(matrix([0x3c0, 0x1f600]));
+  });
+
+  test("may be empty", () => {
+    expect(run('x = ""').x.cols).toBe(0);
+  });
+});
+
 describe("arithmetic", () => {
   test("on scalars", () => {
     expect(run("x = 1 + 2 * 3 - 8 / 4").x).toEqual(scalar(5));

@@ -1,12 +1,12 @@
 ---
 title: Fourier Series
 ---
-n = param(0, colon(1, 500), 8)
+n = param("n", colon(1, 500), 8)
 x = linspace(-pi, pi, 1800)
 
 dkn = sin((n+1/2)*x) ./ sin(x/2);
 
-w = param(1, linspace(0.1, 0.5, 100))
+w = param("w", linspace(0.1, 0.5, 100))
 s = (abs(x+2) < w) - (abs(x+1) < w) + (abs(x) < w) + (abs(x-1) < w) - (abs(x-2) < w)
 
 y = conv(dkn, s) / length(x)

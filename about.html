@@ -23,6 +23,11 @@
       </table>
 
       <table>
+        <caption>Text</caption>
+        <tr><td><tt>"text"</tt></td><td>string (row of character codes)</td></tr>
+        <tr><td><tt>% &ctdot;</tt>, <tt># &ctdot;</tt></td><td>comment, to the end of the line</td></tr>
+      </table>
+      <table>
         <caption>Arithmetic</caption>
         <tr><td><tt>+</tt>, <tt>-</tt></td><td>Addition, subtraction (pointwise)</td></tr>
         <tr><td><tt>*</tt>, <tt>/</tt>, <tt>^</tt></td><td>Multiplication (matrix), division, exponentiation (scalar)</td></tr>
@@ -61,6 +66,7 @@
 
       <table>
         <caption>Figure manipulation</caption>
+        <tr><td><tt>param(name, range, initial=range(0))</tt></td><td>A control over the range, and its value</td></tr>
         <tr><td><tt>plot(fid, X1, Y1, X2, Y2, ...)</tt>, <br /><tt>scatter(fid, X1, Y1, X2, Y2, ...)</tt>, <br /><tt>table(fid, X1, Y1, X2, Y2, ...)</tt></td><td>Add XY data to figure</td></tr>
         <tr><td><tt>xlim(fid, limits)</tt>, <br /><tt>ylim(fid, limits)</td><td></td></tr>
       </table>

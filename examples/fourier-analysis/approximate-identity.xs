@@ -1,8 +1,8 @@
 ---
 title: Approximate Identity
 ---
-n = param(0, colon(1, 30), 8)
-w = param(1, linspace(0, 1), 0.3)
+n = param("n", colon(1, 30), 8)
+w = param("w", linspace(0, 1), 0.3)
 x = linspace(-pi, pi, 8*n)
 
 e = fold(colon(0, n), x*0, @(s, n) s+cos(n*x))

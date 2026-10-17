@@ -1,8 +1,8 @@
 ---
 title: Logistic Map
 ---
-r = param(0, linspace(2, 4, 1600), 3.55);
-n = floor(param(1, colon(1, 100), 30))
+r = param("r", linspace(2, 4, 1600), 3.55);
+n = floor(param("n", colon(1, 100), 30))
 
 f = @(x) r*x.*(1-x);
 

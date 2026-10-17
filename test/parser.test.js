@@ -30,6 +30,14 @@ describe("literals", () => {
   test("matrix elements may be separated by spaces", () => {
     expect(parse("[1 2]")).toEqual(parse("[1, 2]"));
   });
+
+  test("string", () => {
+    expect(parse('"a % b"')).toEqual([{ op: "$mkstring", value: "a % b" }]);
+  });
+
+  test("a string cannot span lines", () => {
+    expect(() => parse('"a\nb"')).toThrow(SyntaxError);
+  });
 });
 
 describe("expressions", () => {
@@ -111,8 +119,19 @@ describe("statements", () => {
     expect(() => parse("x = 1 +")).toThrow(SyntaxError);
   });
 
-  test("there is no comment syntax", () => {
-    expect(() => parse("x = 1 # one")).toThrow(SyntaxError);
+  test("% and # start a comment that runs to the end of the line", () => {
+    expect(parse("a % one\nb # two")).toEqual(["a", "b"].map(variable));
+  });
+
+  test("lines with only a comment are skipped", () => {
+    expect(parse("# head\na\n  % middle\nb\n% tail")).toEqual(
+      ["a", "b"].map(variable),
+    );
+  });
+
+  test("a bracket in a comment or string does not start a matrix", () => {
+    expect(parse("a # [\nb -1")).toEqual(parse("a\nb - 1"));
+    expect(parse('f("[", b -1)')).toEqual(parse('f("[", b - 1)'));
   });
 
   test("... continues a statement on the next line", () => {

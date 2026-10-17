@@ -15,7 +15,7 @@ export function run(source) {
 }
 
 // Runs a script and returns the events it emits. `params` is the values the
-// host has set, as [id, value] pairs.
+// host has set, as [name, value] pairs.
 export function events(source, params = []) {
   const emitted = [];
   const machine = new Machine(library, constants, (e) => emitted.push(e));

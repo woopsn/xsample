@@ -1,6 +1,6 @@
 import type { BinaryOp, Node, Resolve } from "./ast";
 import type { Event, ParamId } from "./events";
-import { mknum } from "./value";
+import { mknum, mkstring } from "./value";
 import type { Formula, Value } from "./value";
 
 // The variables of one scope, by name.
@@ -96,6 +96,9 @@ export class Machine {
 
         return value;
       }
+
+      case "$mkstring":
+        return mkstring(node.value);
 
       case "$mkmatrix": {
         const args = node.args.map((a) => this.interpret(a));

@@ -1,8 +1,8 @@
-import { mknum } from "./value";
+import { mknum, stringOf } from "./value";
 import type { Builtin } from "./vm";
 
-// Identifies a parameter: a number only until the language has strings.
-export type ParamId = number;
+// Identifies a parameter by the name the script gives it.
+export type ParamId = string;
 
 // One curve of a figure, through the points (x[i], y[i]).
 export interface Series {
@@ -58,12 +58,12 @@ function limits(axis: "x" | "y"): Builtin {
 
 // The builtins through which a script reaches its host.
 export const emitters: Record<string, Builtin> = {
-  // `param(id, range, initial)` declares a parameter. It evaluates to the
+  // `param(name, range, initial)` declares a parameter. It evaluates to the
   // value the host has set, and to the initial value until there is one.
   param(vm, args) {
     // assert args.length == 2 || args.length == 3
     // assert args[1].rows == 1
-    const id = args[0].data[0];
+    const id = stringOf(args[0]);
     const range = args[1].data;
     const initial = args[2] ? args[2].data[0] : range[0];
     const value = vm.params.get(id) ?? initial;
