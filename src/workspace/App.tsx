@@ -11,8 +11,15 @@ type Values = Map<ParamId, number>;
 
 // The workspace of a page: the script, the controls for the parameters it
 // declares and the figures it draws. The script runs when it is submitted
-// and when a parameter changes.
-export function App({ script }: { script: string }) {
+// and when a parameter changes. A description, in HTML, is shown beneath the
+// figures.
+export function App({
+  script,
+  description,
+}: {
+  script: string;
+  description?: string;
+}) {
   const [runner] = useState(() => new Runner());
   const [source, setSource] = useState(script);
   const [params, setParams] = useState<Param[]>([]);
@@ -80,6 +87,13 @@ export function App({ script }: { script: string }) {
       <div className="flex-parent">
         <Display figures={figures} />
       </div>
+
+      {description && (
+        <details className="description">
+          <summary>Description</summary>
+          <div dangerouslySetInnerHTML={{ __html: description }} />
+        </details>
+      )}
 
       <form
         noValidate

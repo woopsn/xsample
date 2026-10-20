@@ -25,7 +25,11 @@ export function Workspace({ script }: { script: string }) {
       {example?.blurb && <p className="blurb">{example.blurb}</p>}
 
       {/* a new example starts afresh, without the values set for the last */}
-      <App key={id} script={example?.script ?? script} />
+      <App
+        key={id}
+        script={example?.script ?? script}
+        description={example?.description}
+      />
     </>
   );
 }

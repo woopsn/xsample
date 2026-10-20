@@ -24,7 +24,8 @@ form {
   }
 }
 
-fieldset {
+fieldset,
+details {
   background: #fafafa;
   border: 1px solid #f0f0f0;
 }
@@ -79,12 +80,25 @@ table {
     vertical-align: middle;
   }
 
-  fieldset {
-    > legend {
-      padding: 0.6rem;
-      background: lighten($light-green, 60%);
-    }
+  fieldset > legend,
+  details > summary {
+    padding: 0.6rem;
+    background: lighten($light-green, 60%);
+  }
 
+  // padded like a fieldset
+  details {
+    padding: 0.35em 0.75em 0.625em;
+    margin-bottom: 1rem;
+
+    // as narrow as a legend, keeping its disclosure marker
+    > summary {
+      width: fit-content;
+      cursor: pointer;
+    }
+  }
+
+  fieldset {
     // a figure may shrink below the width its chart was drawn at
     &.display {
       flex: 1;

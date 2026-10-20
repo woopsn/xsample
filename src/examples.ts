@@ -7,6 +7,8 @@ export interface Example {
   id: string;
   title: string;
   blurb?: string;
+  // HTML, shown beneath the figures
+  description?: string;
   script: string;
 }
 
