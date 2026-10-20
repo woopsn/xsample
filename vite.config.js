@@ -39,6 +39,11 @@ function example() {
 }
 
 export default defineConfig({
+  // relative, so the site works under GitHub Pages' /xsample/ path
+  base: "./",
+  build: {
+    rollupOptions: { input: ["index.html", "about.html"] },
+  },
   plugins: [grammar(), example()],
   // the worker is bundled separately, and imports the grammar too
   worker: { plugins: () => [grammar()] },
