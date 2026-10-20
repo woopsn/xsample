@@ -99,7 +99,7 @@ export function App({ script }: { script: string }) {
             />
           </fieldset>
 
-          <fieldset>
+          <fieldset className="parameters">
             <legend>Parameters</legend>
 
             <Parameters

@@ -97,6 +97,17 @@ table {
       margin: 0;
     }
   }
+
+  // on a narrow screen, figures, parameters and source stack in that order
+  @media (max-width: 40em) {
+    .flex-parent {
+      flex-direction: column;
+    }
+
+    .parameters {
+      order: -1;
+    }
+  }
 }
 
 header select {
