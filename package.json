@@ -19,6 +19,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "bench": "vitest bench --run --reporter=verbose",
     "typecheck": "tsc",
     "format": "prettier --write ."
   },

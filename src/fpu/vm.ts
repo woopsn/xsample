@@ -36,7 +36,9 @@ export class Machine {
   }
 
   exec(ast: Node[]): void {
-    Object.assign(this.frames[0], this.constants);
+    // copied, as `pi(0) = 3` would otherwise change pi for later runs too
+    for (const [sym, value] of Object.entries(this.constants))
+      this.frames[0][sym] = { ...value, data: value.data.slice() };
 
     for (const node of ast) this.interpret(node);
   }

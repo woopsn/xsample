@@ -144,6 +144,11 @@ describe("variables", () => {
     expect(run("x = ln2").x).toEqual(scalar(Math.LN2));
   });
 
+  test("changing a constant leaves it for later runs", () => {
+    run("pi(0) = 3");
+    expect(run("x = pi").x).toEqual(scalar(Math.PI));
+  });
+
   test("reading an undefined variable throws", () => {
     expect(() => run("x = nosuch")).toThrow("unknown symbol: nosuch");
   });
