@@ -80,6 +80,18 @@ table {
     vertical-align: middle;
   }
 
+  // a value is typed, or picked on the slider; the spin buttons step too
+  // finely to be of use
+  input[type="number"] {
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
+    }
+  }
+
   fieldset > legend,
   details > summary {
     padding: 0.6rem;
