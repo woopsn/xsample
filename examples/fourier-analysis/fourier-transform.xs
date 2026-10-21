@@ -2,7 +2,7 @@
 title: Fourier Transform
 ---
 w = param("w", linspace(0.1, 20), 1)
-n = param("n", colon(64, 512, 2), 256)
+n = param("n", 64:2:512, 256)
 
 t = linspace(-2*pi, 2*pi, n)
 y = transpose(sin(w*pi*t) ./ (w*pi*t))

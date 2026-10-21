@@ -21,11 +21,18 @@ export interface ParsedFormula {
   formula: Parsed;
 }
 
-// `:` builds a range: `a:b`.
 export interface ParsedBinary {
-  op: BinaryOp | ":";
+  op: BinaryOp;
   lhs: Parsed;
   rhs: Parsed;
+}
+
+// `start:end`, or `start:step:end`.
+export interface ParsedRange {
+  op: ":";
+  start: Parsed;
+  step?: Parsed;
+  end: Parsed;
 }
 
 export type CompoundOp =
@@ -45,6 +52,7 @@ export type Parsed =
   | ParsedMatrix
   | ParsedFormula
   | ParsedBinary
+  | ParsedRange
   | ParsedAssignment;
 
 // Throws a SyntaxError if the source is not a script.

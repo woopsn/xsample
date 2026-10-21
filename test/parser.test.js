@@ -71,6 +71,18 @@ describe("expressions", () => {
     ]);
   });
 
+  test("range", () => {
+    expect(parse("0:n")).toEqual([
+      { op: ":", start: literal(0), end: variable("n") },
+    ]);
+  });
+
+  test("range with a step between its start and end", () => {
+    expect(parse("0:2:n")).toEqual([
+      { op: ":", start: literal(0), step: literal(2), end: variable("n") },
+    ]);
+  });
+
   test("assignment", () => {
     expect(parse("x = 1")).toEqual([
       { op: "=", lhs: variable("x"), rhs: literal(1) },
@@ -87,12 +99,12 @@ describe("precedence", () => {
     expect(parse("2 * 3 ^ 4")).toEqual(parse("2 * (3 ^ 4)"));
   });
 
-  test("addition binds tighter than comparison", () => {
-    expect(parse("1 + 2 < 3 + 4")).toEqual(parse("(1 + 2) < (3 + 4)"));
+  test("addition binds tighter than range", () => {
+    expect(parse("1 + 2 : 3 + 4")).toEqual(parse("(1 + 2) : (3 + 4)"));
   });
 
-  test("comparison binds tighter than range", () => {
-    expect(parse("0 : 1 < 2")).toEqual(parse("0 : (1 < 2)"));
+  test("range binds tighter than comparison", () => {
+    expect(parse("0 : 1 < 2")).toEqual(parse("(0 : 1) < 2"));
   });
 
   test("binary operators associate to the left", () => {

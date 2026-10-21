@@ -74,12 +74,12 @@ function desugar(node: Parsed): Node {
       return assign(node.lhs, binary(operators[node.op], lhs, rhs));
     }
 
-    case ":":
-      return {
-        op: "$call",
-        sym: "colon",
-        args: [desugar(node.lhs), desugar(node.rhs)],
-      };
+    case ":": {
+      const args = [desugar(node.start), desugar(node.end)];
+      if (node.step) args.push(desugar(node.step));
+
+      return { op: "$call", sym: "colon", args };
+    }
 
     default:
       return binary(node.op, desugar(node.lhs), desugar(node.rhs));

@@ -38,9 +38,14 @@ Statement = expr:Expression semi { return expr; }
 
 Expression = _ expr:(SetExpr / LogExpr) _ { return expr; }
 SetExpr = lhs:VariableOrCall tail:(_ setop _ Expression)+ { return makeOp(lhs, tail); }
-LogExpr = head:RngExpr tail:(_ logop _ RngExpr)* { return makeOp(head, tail) }
-RngExpr = head:CmpExpr tail:(_ rngop _ CmpExpr)* { return makeOp(head, tail) }
-CmpExpr = head:AddExpr tail:(_ cmpop _ AddExpr)* { return makeOp(head, tail) }
+LogExpr = head:CmpExpr tail:(_ logop _ CmpExpr)* { return makeOp(head, tail) }
+CmpExpr = head:RngExpr tail:(_ cmpop _ RngExpr)* { return makeOp(head, tail) }
+// A range is `start:end`, or `start:step:end`.
+RngExpr = start:AddExpr tail:(_ ":" _ @AddExpr)|0..2| {
+    if (tail.length == 0) return start;
+    if (tail.length == 1) return { op: ":", start, end: tail[0] };
+    return { op: ":", start, step: tail[0], end: tail[1] };
+}
 AddExpr = head:MulExpr tail:(_ addop _ MulExpr)* { return makeOp(head, tail) }
 MulExpr = head:UnaryExpr tail:(_ mulop _ UnaryExpr)* { return makeOp(head, tail) }
 UnaryExpr = unop:[-+!] expr:UnaryExpr { return { op: unop, lhs: { op: "$mkscalar", value: 0 }, rhs: expr }; }
@@ -112,7 +117,6 @@ Decimal "float"
 
 setop = "."? ("=" / "+=" / "-=" / "*=" / "/=" / "|=" / "&=" / "^=") { return text(); }
 logop = "."? ("||" / "|" / "&&" / "&") { return text(); }
-rngop = ":" { return text(); }
 cmpop = ("<=" / "<" / ">=" / ">" / "==" / "!=") { return text(); }
 // Inside a matrix, a sign after whitespace and before none starts a new
 // element: [1 -1] has two elements, and [1 - 1] and [1-1] have one.

@@ -2,7 +2,7 @@
 title: Fourier Series
 description: aiojdsa
 ---
-n = param("n", colon(1, 500), 8)
+n = param("n", 1:500, 8)
 x = linspace(-pi, pi, 1800)
 
 dkn = sin((n+1/2)*x) ./ sin(x/2);

@@ -22,6 +22,26 @@ describe("constructors", () => {
     );
   });
 
+  test("colon reaches an end that its step misses only by rounding", () => {
+    const { x } = run("x = colon(0, 0.3, 0.1)");
+
+    expect(x.cols).toBe(4);
+    expect(x.data[3]).toBe(0.3);
+  });
+
+  test("colon does not pass an end that its step misses", () => {
+    expect(run("x = colon(0, 1, 0.3)").x.cols).toBe(4);
+  });
+
+  test("colon is empty if its step points away from its end", () => {
+    expect(run("x = colon(3, 0)").x).toEqual(matrix([]));
+    expect(run("x = colon(0, 3, -1)").x).toEqual(matrix([]));
+  });
+
+  test("colon is empty if its step is zero", () => {
+    expect(run("x = colon(0, 3, 0)").x).toEqual(matrix([]));
+  });
+
   test("zeros", () => {
     expect(run("x = zeros(2, 3)").x).toEqual(matrix([0, 0, 0], [0, 0, 0]));
   });

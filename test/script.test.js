@@ -34,6 +34,16 @@ describe("desugaring", () => {
     ]);
   });
 
+  test("a:s:b calls colon with the step last", () => {
+    expect(compile("1:2:n")).toEqual([
+      {
+        op: "$call",
+        sym: "colon",
+        args: [literal(1), variable("n"), literal(2)],
+      },
+    ]);
+  });
+
   test("^T calls transpose", () => {
     expect(compile("x^T")).toEqual([
       { op: "$call", sym: "transpose", args: [variable("x")] },

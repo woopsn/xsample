@@ -45,11 +45,23 @@ export const library: Record<string, Builtin> = {
       max = args[1].data[0];
     const step = args[2] ? args[2].data[0] : 1;
 
-    const result = mknum(1, Math.floor((max - min) / step) + 1),
-      data = result.data,
-      n = data.length;
+    // As in MATLAB, a range ends exactly at max if some number of steps
+    // reaches it to within rounding: 0:0.1:0.3 has four elements. It then
+    // counts its first half up from min and its second half down from max.
+    const tol = 2 * Number.EPSILON * Math.max(Math.abs(min), Math.abs(max));
+    const steps = Math.round((max - min) / step);
+    const reachesMax = Math.abs(min + steps * step - max) <= tol;
 
-    for (let i = 0; i < n; ++i) data[i] = min + i * step;
+    // empty if the step is zero or points away from the end
+    let n = reachesMax ? steps + 1 : Math.floor((max - min) / step) + 1;
+    if (step == 0 || n < 0) n = 0;
+
+    const result = mknum(1, n),
+      data = result.data;
+
+    for (let i = 0; i < n; ++i)
+      data[i] =
+        reachesMax && i >= n / 2 ? max - (n - 1 - i) * step : min + i * step;
 
     return result;
   },
