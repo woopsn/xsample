@@ -1,17 +1,13 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect } from "react";
 import { find } from "../examples";
 import { App } from "./App";
-
-function subscribe(listener: () => void) {
-  addEventListener("hashchange", listener);
-  return () => removeEventListener("hashchange", listener);
-}
+import { useHash } from "./hash";
 
 // The workspace of the example the URL names after its #, such as
 // index.html#fourier-analysis/fourier-series. Without one, the workspace
 // starts with `script`.
 export function Workspace({ script }: { script: string }) {
-  const id = useSyncExternalStore(subscribe, () => location.hash.slice(1));
+  const id = useHash();
   const example = find(id);
   const title = example?.title ?? "Workspace";
 
