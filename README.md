@@ -1,9 +1,9 @@
 # xsample
 
 A small MATLAB-like language that runs in the browser. Scripts declare
-parameters which each becomes a form control, so a figure can be explored
- by dragging a slider: how a dynamic system evolves, its dependence on
-parameters, how numerical methods behaves.
+parameters, each of which becomes a form control, so a figure can be
+explored by dragging a slider: how a dynamic system evolves, how it depends
+on its parameters, how a numerical method behaves.
 
 ```
 n = param("n", 0:2000)
