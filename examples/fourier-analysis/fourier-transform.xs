@@ -1,10 +1,8 @@
 ---
 title: Fourier Transform
 ---
-w = param("w", linspace(0.1, 20), 1)
-phint("w", "Frequency of the sinc pulse")
-n = param("n", 64:2:512, 256)
-phint("n", "Number of samples")
+w = param("w", linspace(0.1, 20), 1, "Frequency of the sinc pulse")
+n = param("n", 64:2:512, 256, "Number of samples")
 
 t = linspace(-2*pi, 2*pi, n)
 y = transpose(sin(w*pi*t) ./ (w*pi*t))

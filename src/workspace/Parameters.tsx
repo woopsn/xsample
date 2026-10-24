@@ -1,9 +1,8 @@
 import { useId, useState } from "react";
 import type { Event, ParamId } from "../fpu/events";
 
-// A parameter as the script declared it, with the value it took and the hint
-// it was given, if any.
-export type Param = Extract<Event, { type: "param" }> & { hint?: string };
+// A parameter as the script declared it, with the value it took.
+export type Param = Extract<Event, { type: "param" }>;
 
 interface Props {
   params: Param[];

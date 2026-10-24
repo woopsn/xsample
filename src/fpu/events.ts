@@ -17,8 +17,13 @@ export interface FigureProperties {
 
 // What a running script tells its host, which is what renders it.
 export type Event =
-  | { type: "param"; id: ParamId; range: Float64Array; value: number }
-  | { type: "hint"; id: ParamId; hint: string }
+  | {
+      type: "param";
+      id: ParamId;
+      range: Float64Array;
+      value: number;
+      hint?: string;
+    }
   | { type: "figure"; figure: number; properties: FigureProperties }
   | {
       type: "plot";
@@ -66,32 +71,34 @@ function limits(axis: "x" | "y"): Builtin {
 
 // The builtins through which a script reaches its host.
 export const emitters: Record<string, Builtin> = {
-  // `param(name, range, initial)` declares a parameter. It evaluates to the
-  // value the host has set, and to the initial value until there is one.
+  // `param(name, range, initial, hint)` declares a parameter; the initial
+  // value and the hint, a string describing it for its control, are each
+  // optional. It evaluates to the value the host has set, and to the initial
+  // value until there is one.
   param(vm, args) {
-    // assert args.length == 2 || args.length == 3
+    // assert 2 <= args.length && args.length <= 4
     // assert args[1].rows == 1
     if (!args[0].text) throw new Error("param: the name must be a string");
 
-    const id = stringOf(args[0]);
-    const range = args[1].data;
-    const initial = args[2] ? args[2].data[0] : range[0];
-    const value = vm.params.get(id) ?? initial;
+    // a string after the range is the hint, and comes last
+    const [name, range, ...rest] = args;
+    const hint = rest.at(-1)?.text ? rest.at(-1) : undefined;
+    const [initial] = hint ? rest.slice(0, -1) : rest;
+    if (initial?.text)
+      throw new Error("param: the initial value must be a number");
 
-    vm.emit({ type: "param", id, range: range.slice(), value });
+    const id = stringOf(name);
+    const value = vm.params.get(id) ?? initial?.data[0] ?? range.data[0];
+
+    vm.emit({
+      type: "param",
+      id,
+      range: range.data.slice(),
+      value,
+      hint: hint && stringOf(hint),
+    });
 
     return mknum(1, 1, value);
-  },
-
-  // `phint(name, hint)` describes a parameter, for its control.
-  phint(vm, args) {
-    // assert args.length == 2
-    if (!args[0].text) throw new Error("phint: the name must be a string");
-    if (!args[1].text) throw new Error("phint: the hint must be a string");
-
-    vm.emit({ type: "hint", id: stringOf(args[0]), hint: stringOf(args[1]) });
-
-    return args[1];
   },
 
   // `figure(id, "name", name)` makes a figure the current one, which later

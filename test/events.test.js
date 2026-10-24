@@ -27,24 +27,22 @@ describe("param", () => {
 
     expect(event.value).toBe(3);
   });
-});
 
-describe("phint", () => {
-  test("describes a parameter", () => {
-    expect(events('phint("n", "Iterations")')).toEqual([
-      { type: "hint", id: "n", hint: "Iterations" },
-    ]);
+  test("takes a hint as its last argument", () => {
+    const [event] = events('param("n", [1, 2, 3], 2, "Iterations")');
+
+    expect(event).toMatchObject({ value: 2, hint: "Iterations" });
   });
 
-  test("is named by a string", () => {
-    expect(() => run('phint(0, "Iterations")')).toThrow(
-      "phint: the name must be a string",
-    );
+  test("takes a hint without an initial value", () => {
+    const [event] = events('param("n", [1, 2, 3], "Iterations")');
+
+    expect(event).toMatchObject({ value: 1, hint: "Iterations" });
   });
 
-  test("takes a string hint", () => {
-    expect(() => run('phint("n", 2)')).toThrow(
-      "phint: the hint must be a string",
+  test("takes its hint last", () => {
+    expect(() => run('param("n", [1, 2, 3], "Iterations", 2)')).toThrow(
+      "param: the initial value must be a number",
     );
   });
 });

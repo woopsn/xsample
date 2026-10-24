@@ -37,7 +37,6 @@ export function App({
   const run = useCallback(
     (source: string, values: Values) => {
       const declared: Param[] = [];
-      const hints = new Map<ParamId, string>();
       const drawn: Figures = new Map();
       let failed: Failure | undefined;
 
@@ -56,10 +55,6 @@ export function App({
             declared.push(message);
             break;
 
-          case "hint":
-            hints.set(message.id, message.hint);
-            break;
-
           case "figure":
           case "plot":
           case "limits":
@@ -76,7 +71,7 @@ export function App({
             setError(failed);
             if (failed) break;
 
-            setParams(declared.map((p) => ({ ...p, hint: hints.get(p.id) })));
+            setParams(declared);
             show(() => drawn);
             break;
         }
