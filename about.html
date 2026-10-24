@@ -68,7 +68,9 @@
       <table>
         <caption>Figure manipulation</caption>
         <tr><td><tt>param(name, range, initial=range(0), hint)</tt></td><td>A control over the range, and its value; the hint, a string, describes it beside the control</td></tr>
-        <tr><td><tt>figure(fid, "name", name)</tt></td><td>Make a figure current (figure 1 is, at first), and name it</td></tr>
+        <tr><td><tt>figure(fid)</tt></td><td>Make a figure current (figure 1 is, at first)</td></tr>
+        <tr><td><tt>title(text)</tt>, <br /><tt>xlabel(text)</tt>, <br /><tt>ylabel(text)</tt></td><td>Title the current figure, or label an axis of it</td></tr>
+        <tr><td><tt>legend(name1, name2, ...)</tt></td><td>Name the series of the current figure, in order</td></tr>
         <tr><td><tt>plot(X1, Y1, X2, Y2, ...)</tt>, <br /><tt>scatter(X1, Y1, X2, Y2, ...)</tt></td><td>Draw XY data on the current figure</td></tr>
         <tr><td><tt>xlim(limits)</tt>, <br /><tt>ylim(limits)</tt></td><td>Fix an axis of the current figure</td></tr>
       </table>

@@ -14,3 +14,4 @@ step = @(u) (1-2*r)*u + r*shift(u, -1) + r*shift(u, 1)
 
 plot(x, iterate(step, n, u0))
 ylim([0 1.3])
+xlabel("x"); ylabel("temperature")

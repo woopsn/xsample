@@ -15,3 +15,4 @@ x2 = linspace(2*x(0), 2*x(length(x)-1), length(y))
 plot(x, s, x2, y)
 
 xlim([-3 3]); ylim([-2 2])
+xlabel("x"); legend("pulses", "partial sum")

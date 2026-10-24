@@ -12,8 +12,10 @@ se = conv(s, e) / (length(x)/2)
 
 x2 = linspace(-2*pi, 2*pi, length(se))
 
-figure(1, "name", "Kernel")
+figure(1); title("Kernel")
 plot(x, e)
+xlabel("x")
 
-figure(2, "name", "Convolution")
+figure(2); title("Convolution")
 plot(x, s, x2, se)
+xlabel("x"); legend("pulses", "convolution")

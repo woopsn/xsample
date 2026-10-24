@@ -48,13 +48,7 @@ describe("param", () => {
 });
 
 describe("figure", () => {
-  test("emits the figure's properties", () => {
-    expect(events('figure(2, "name", "Orbits")')).toEqual([
-      { type: "figure", figure: 2, properties: { name: "Orbits" } },
-    ]);
-  });
-
-  test("may set no properties", () => {
+  test("chooses a figure, setting none of its properties", () => {
     expect(events("figure(2)")).toEqual([
       { type: "figure", figure: 2, properties: {} },
     ]);
@@ -66,15 +60,43 @@ describe("figure", () => {
     expect([plot.figure, limits.figure]).toEqual([2, 2]);
   });
 
-  test("rejects an unknown property", () => {
-    expect(() => run('figure(1, "color", 2)')).toThrow(
-      "figure: unknown property: color",
-    );
+  test("makes a figure the one that later calls set the properties of", () => {
+    const [, title] = events('figure(2); title("Orbits")');
+
+    expect(title.figure).toBe(2);
   });
 
-  test("rejects a name that is not a string", () => {
-    expect(() => run('figure(1, "name", 2)')).toThrow(
-      "figure: the name must be a string",
+  test("takes only the figure's number", () => {
+    expect(() => run('figure(1, "name", "Orbits")')).toThrow(
+      "figure: takes only the figure's number",
+    );
+  });
+});
+
+describe("title, xlabel and ylabel", () => {
+  test("set a property of the current figure", () => {
+    expect(events('title("Orbits"); xlabel("x"); ylabel("r")')).toEqual([
+      { type: "figure", figure: 1, properties: { title: "Orbits" } },
+      { type: "figure", figure: 1, properties: { xlabel: "x" } },
+      { type: "figure", figure: 1, properties: { ylabel: "r" } },
+    ]);
+  });
+
+  test("take a string", () => {
+    expect(() => run("title(2)")).toThrow("title: the text must be a string");
+  });
+});
+
+describe("legend", () => {
+  test("names the series of the current figure", () => {
+    expect(events('legend("signal", "fit")')).toEqual([
+      { type: "figure", figure: 1, properties: { legend: ["signal", "fit"] } },
+    ]);
+  });
+
+  test("takes strings", () => {
+    expect(() => run('legend("signal", 2)')).toThrow(
+      "legend: each name must be a string",
     );
   });
 });

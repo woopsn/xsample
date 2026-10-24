@@ -24,7 +24,7 @@ export function Display({ figures }: { figures: Figures }) {
     <fieldset key={id} className="display">
       <legend>
         Figure {id}
-        {figure.name && `: ${figure.name}`}
+        {figure.title && `: ${figure.title}`}
       </legend>
       <Plot figure={figure} />
     </fieldset>
@@ -38,10 +38,11 @@ function Plot({ figure }: { figure: Figure }) {
   const built = useRef<{ plot: uPlot; shape: string }>(null);
 
   // A chart is only given new data, unless the shape of the figure changed:
-  // then it is built again.
+  // the number of its series, or any of its properties. Then it is built
+  // again.
   useEffect(() => {
-    const { chart, series, x, y } = figure;
-    const shape = JSON.stringify([chart, series.length, x, y]);
+    const { series, ...properties } = figure;
+    const shape = JSON.stringify([series.length, properties]);
 
     if (built.current?.shape == shape) {
       built.current.plot.setData(align(series));
@@ -90,11 +91,12 @@ function options(figure: Figure, width: number): uPlot.Options {
       x: { time: false, range: figure.x },
       y: { range: figure.y },
     },
+    axes: [{ label: figure.xlabel }, { label: figure.ylabel }],
     series: [
       { label: "x" },
       ...figure.series.map((_, i) => {
         const color = COLORS[i % COLORS.length];
-        const label = "y" + (i + 1);
+        const label = figure.legend?.[i] ?? "y" + (i + 1);
 
         return figure.chart == "scatter"
           ? {

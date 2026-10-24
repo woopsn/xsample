@@ -10,9 +10,13 @@ export interface Series {
   y: Float64Array;
 }
 
-// What `figure` can set of a figure, besides what it plots.
+// What `title`, `xlabel`, `ylabel` and `legend` set of a figure.
 export interface FigureProperties {
-  name?: string;
+  title?: string;
+  xlabel?: string;
+  ylabel?: string;
+  // the name of each series, in order
+  legend?: string[];
 }
 
 // What a running script tells its host, which is what renders it.
@@ -24,6 +28,7 @@ export type Event =
       value: number;
       hint?: string;
     }
+  // a figure is chosen, or some of its properties are set
   | { type: "figure"; figure: number; properties: FigureProperties }
   | {
       type: "plot";
@@ -53,6 +58,20 @@ function chart(type: "line" | "scatter"): Builtin {
     vm.emit({ type: "plot", figure: vm.figure, chart: type, series });
 
     return mknum(1, 1, vm.figure);
+  };
+}
+
+// `title("Orbits")` sets a property of the current figure: its title, or
+// the label of an axis.
+function property(name: "title" | "xlabel" | "ylabel"): Builtin {
+  return (vm, args) => {
+    // assert args.length == 1
+    if (!args[0].text) throw new Error(`${name}: the text must be a string`);
+
+    const properties = { [name]: stringOf(args[0]) };
+    vm.emit({ type: "figure", figure: vm.figure, properties });
+
+    return args[0];
   };
 }
 
@@ -101,28 +120,32 @@ export const emitters: Record<string, Builtin> = {
     return mknum(1, 1, value);
   },
 
-  // `figure(id, "name", name)` makes a figure the current one, which later
-  // plots draw, and sets its properties.
+  // `figure(id)` makes a figure the current one, which later calls draw on
+  // and set the properties of.
   figure(vm, args) {
-    // assert args.length % 2 == 1
-    const properties: FigureProperties = {};
-
-    for (let i = 1; i < args.length; i += 2) {
-      const [property, value] = [args[i], args[i + 1]];
-
-      if (!property.text)
-        throw new Error("figure: a property must be named by a string");
-      if (stringOf(property) != "name")
-        throw new Error("figure: unknown property: " + stringOf(property));
-      if (!value?.text) throw new Error("figure: the name must be a string");
-
-      properties.name = stringOf(value);
-    }
+    if (args.length != 1)
+      throw new Error("figure: takes only the figure's number");
 
     vm.figure = args[0].data[0];
-    vm.emit({ type: "figure", figure: vm.figure, properties });
+    vm.emit({ type: "figure", figure: vm.figure, properties: {} });
 
     return args[0];
+  },
+
+  title: property("title"),
+  xlabel: property("xlabel"),
+  ylabel: property("ylabel"),
+
+  // `legend(name1, name2, ...)` names the series of the current figure, in
+  // the order it plots them.
+  legend(vm, args) {
+    if (!args.every((arg) => arg.text))
+      throw new Error("legend: each name must be a string");
+
+    const properties = { legend: args.map(stringOf) };
+    vm.emit({ type: "figure", figure: vm.figure, properties });
+
+    return mknum(1, 1, vm.figure);
   },
 
   plot: chart("line"),

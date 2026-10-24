@@ -29,18 +29,18 @@ describe("draw", () => {
     );
   });
 
-  test("figure names a figure, which keeps its name when plotted", () => {
-    expect(drawn(figure(0, { name: "Orbits" }), plot(0)).get(0)).toEqual({
+  test("properties set on a figure are kept when it is plotted", () => {
+    expect(drawn(figure(0, { title: "Orbits" }), plot(0)).get(0)).toEqual({
       chart: "line",
       series,
-      name: "Orbits",
+      title: "Orbits",
     });
   });
 
-  test("figure without properties keeps the name", () => {
+  test("setting one property keeps the others", () => {
     expect(
-      drawn(figure(0, { name: "Orbits" }), figure(0, {})).get(0).name,
-    ).toBe("Orbits");
+      drawn(figure(0, { title: "Orbits" }), figure(0, { xlabel: "x" })).get(0),
+    ).toMatchObject({ title: "Orbits", xlabel: "x" });
   });
 
   test("plotting a figure again replaces its series", () => {
