@@ -18,6 +18,7 @@ export interface FigureProperties {
 // What a running script tells its host, which is what renders it.
 export type Event =
   | { type: "param"; id: ParamId; range: Float64Array; value: number }
+  | { type: "hint"; id: ParamId; hint: string }
   | { type: "figure"; figure: number; properties: FigureProperties }
   | {
       type: "plot";
@@ -80,6 +81,17 @@ export const emitters: Record<string, Builtin> = {
     vm.emit({ type: "param", id, range: range.slice(), value });
 
     return mknum(1, 1, value);
+  },
+
+  // `phint(name, hint)` describes a parameter, for its control.
+  phint(vm, args) {
+    // assert args.length == 2
+    if (!args[0].text) throw "phint: the name must be a string";
+    if (!args[1].text) throw "phint: the hint must be a string";
+
+    vm.emit({ type: "hint", id: stringOf(args[0]), hint: stringOf(args[1]) });
+
+    return args[1];
   },
 
   // `figure(id, "name", name)` makes a figure the current one, which later

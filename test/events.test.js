@@ -29,6 +29,26 @@ describe("param", () => {
   });
 });
 
+describe("phint", () => {
+  test("describes a parameter", () => {
+    expect(events('phint("n", "Iterations")')).toEqual([
+      { type: "hint", id: "n", hint: "Iterations" },
+    ]);
+  });
+
+  test("is named by a string", () => {
+    expect(() => run('phint(0, "Iterations")')).toThrow(
+      "phint: the name must be a string",
+    );
+  });
+
+  test("takes a string hint", () => {
+    expect(() => run('phint("n", 2)')).toThrow(
+      "phint: the hint must be a string",
+    );
+  });
+});
+
 describe("figure", () => {
   test("emits the figure's properties", () => {
     expect(events('figure(2, "name", "Orbits")')).toEqual([

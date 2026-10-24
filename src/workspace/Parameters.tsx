@@ -1,8 +1,9 @@
 import { useId, useState } from "react";
 import type { Event, ParamId } from "../fpu/events";
 
-// A parameter as the script declared it, with the value it took.
-export type Param = Extract<Event, { type: "param" }>;
+// A parameter as the script declared it, with the value it took and the hint
+// it was given, if any.
+export type Param = Extract<Event, { type: "param" }> & { hint?: string };
 
 interface Props {
   params: Param[];
@@ -27,7 +28,7 @@ export function Parameters({ params, onChange }: Props) {
 
 // A slider over the parameter's range, and a box for typing any value.
 function Parameter({
-  param: { id, range, value },
+  param: { id, range, value, hint },
   onChange,
 }: {
   param: Param;
@@ -60,20 +61,22 @@ function Parameter({
         value={nearest(range, value)}
         onChange={(e) => change(range[e.target.valueAsNumber])}
       />
-      <br />
-      <label htmlFor={box}>:=</label>
-      <input
-        id={box}
-        type="number"
-        min={min}
-        max={max}
-        step={step / 4}
-        value={draft ?? value}
-        onChange={(e) => {
-          if (Number.isNaN(e.target.valueAsNumber)) setDraft(e.target.value);
-          else change(e.target.valueAsNumber);
-        }}
-      />
+      <div className="value">
+        <label htmlFor={box}>:=</label>
+        <input
+          id={box}
+          type="number"
+          min={min}
+          max={max}
+          step={step / 4}
+          value={draft ?? value}
+          onChange={(e) => {
+            if (Number.isNaN(e.target.valueAsNumber)) setDraft(e.target.value);
+            else change(e.target.valueAsNumber);
+          }}
+        />
+        {hint && <div className="hint">{hint}</div>}
+      </div>
     </div>
   );
 }

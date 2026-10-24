@@ -20,6 +20,21 @@ html {
 form {
   .field {
     margin-bottom: 1rem;
+
+    // the hint is beneath the box, and level with it
+    .value {
+      display: grid;
+      grid-template-columns: auto auto;
+      justify-content: start;
+      align-items: baseline;
+    }
+
+    .hint {
+      grid-column: 2;
+      margin-top: 0.25rem;
+      font-size: 0.85em;
+      color: rgba($black, 0.7);
+    }
   }
 
   .inline-field {

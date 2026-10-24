@@ -33,6 +33,7 @@ export function App({
   const run = useCallback(
     (source: string, values: Values) => {
       const declared: Param[] = [];
+      const hints = new Map<ParamId, string>();
       const drawn: Figures = new Map();
 
       // Shows figures at the next animation frame. Of the updates that
@@ -48,6 +49,10 @@ export function App({
             declared.push(message);
             break;
 
+          case "hint":
+            hints.set(message.id, message.hint);
+            break;
+
           case "figure":
           case "plot":
           case "limits":
@@ -57,7 +62,7 @@ export function App({
 
           // what the run did not declare or draw is removed
           case "done":
-            setParams(declared);
+            setParams(declared.map((p) => ({ ...p, hint: hints.get(p.id) })));
             show(() => drawn);
             break;
         }

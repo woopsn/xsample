@@ -2,11 +2,13 @@
 title: Fourier Series
 ---
 n = param("n", 1:500, 8)
+phint("n", "Number of harmonics")
 x = linspace(-pi, pi, 1800)
 
 dkn = sin((n+1/2)*x) ./ sin(x/2);
 
 w = param("w", linspace(0.1, 0.5, 100))
+phint("w", "Half-width of each pulse")
 s = (abs(x+2) < w) - (abs(x+1) < w) + (abs(x) < w) + (abs(x-1) < w) - (abs(x-2) < w)
 
 y = conv(dkn, s) / length(x)
