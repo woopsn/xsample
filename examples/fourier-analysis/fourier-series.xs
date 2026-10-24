@@ -1,6 +1,5 @@
 ---
 title: Fourier Series
-description: aiojdsa
 ---
 n = param("n", 1:500, 8)
 x = linspace(-pi, pi, 1800)

@@ -89,7 +89,7 @@ export function App({
       </div>
 
       {description && (
-        <details className="description">
+        <details className="description" open>
           <summary>Description</summary>
           <div dangerouslySetInnerHTML={{ __html: description }} />
         </details>

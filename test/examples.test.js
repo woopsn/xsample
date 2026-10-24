@@ -10,7 +10,7 @@ describe("examples", () => {
         examples.map((example) => example.title),
       ]),
     ).toEqual([
-      ["Dynamic Systems", ["Heat Equation", "Logistic Map"]],
+      ["Dynamic Systems", ["Heat - 1D (Explicit)", "Logistic Map"]],
       [
         "Fourier Analysis",
         ["Approximate Identity", "Fourier Series", "Fourier Transform"],
@@ -19,7 +19,9 @@ describe("examples", () => {
   });
 
   test("are found by their path in examples/", () => {
-    expect(find("dynamic-systems/heat-equation").title).toBe("Heat Equation");
+    expect(find("dynamic-systems/heat-equation").title).toBe(
+      "Heat - 1D (Explicit)",
+    );
     expect(find("dynamic-systems")).toBeUndefined();
   });
 
