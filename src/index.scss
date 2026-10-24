@@ -120,6 +120,12 @@ table {
       text-align: right;
       color: rgba($black, 0.45);
       user-select: none;
+
+      > .error-line {
+        font-weight: bold;
+        color: $red;
+        background: rgba($red, 0.1);
+      }
     }
   }
 

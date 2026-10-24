@@ -127,7 +127,11 @@ export function App({
           <fieldset className="flex">
             <legend>Source</legend>
 
-            <Editor value={source} onChange={setSource} />
+            <Editor
+              value={source}
+              onChange={setSource}
+              errorLine={error?.line}
+            />
           </fieldset>
 
           {error ? (
