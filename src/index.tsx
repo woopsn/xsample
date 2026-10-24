@@ -2,12 +2,12 @@ import "./index.scss";
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { find, landing } from "./examples";
 import { Examples } from "./workspace/Examples";
 import { Workspace } from "./workspace/Workspace";
 
 const header = document.querySelector("#examples");
 const workspace = document.querySelector("#workspace");
-const script = document.querySelector("#script");
 
 if (header)
   createRoot(header).render(
@@ -17,9 +17,14 @@ if (header)
   );
 
 // about.html has no workspace
-if (workspace && script)
+if (workspace) {
+  // the URL names the example shown, so the menu shows it too
+  if (!find(location.hash.slice(1)))
+    history.replaceState(null, "", `#${landing.id}`);
+
   createRoot(workspace).render(
     <StrictMode>
-      <Workspace script={script.textContent.trim()} />
+      <Workspace />
     </StrictMode>,
   );
+}

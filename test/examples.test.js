@@ -10,6 +10,7 @@ describe("examples", () => {
         examples.map((example) => example.title),
       ]),
     ).toEqual([
+      ["About Xsample", ["Basic Plot w/ Parameters"]],
       ["Dynamic Systems", ["Heat - 1D (Explicit)", "Logistic Map"]],
       [
         "Fourier Analysis",

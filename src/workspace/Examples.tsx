@@ -1,15 +1,15 @@
 import { categories, find } from "../examples";
 import { useHash } from "./hash";
 
-// The header of every page: a link to the blank workspace, a menu of the
-// examples, grouped by category, and a link to the about page. The menu
-// shows the example the URL names, if it names one.
+// The header of every page: a menu of the examples, grouped by category, and
+// a link to the about page. The menu shows the example the URL names, if it
+// names one.
 export function Examples() {
   const id = useHash();
 
   return (
     <nav>
-      <a href="index.html">Workspace</a> | Examples:{" "}
+      Examples:{" "}
       <select
         value={find(id) ? id : ""}
         aria-label="Examples"

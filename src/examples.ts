@@ -56,3 +56,6 @@ export const categories: Category[] = categorize();
 export function find(id: string) {
   return examples.find((example) => example.id === id);
 }
+
+// The example the workspace shows when its URL names none.
+export const landing = find("about-xsample/basic-plot")!;
