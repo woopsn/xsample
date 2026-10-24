@@ -1,5 +1,6 @@
 // The worker thread that runs scripts. It is sent a Request for each run,
-// and posts back each event the script emits, then "done".
+// and posts back each event the script emits, an "error" if the script
+// fails to compile or run, then "done".
 
 import type { Node } from "../fpu/ast";
 import type { Event, ParamId } from "../fpu/events";
@@ -13,7 +14,8 @@ export interface Request {
   params: Map<ParamId, number>;
 }
 
-export type Message = Event | { type: "done" };
+export type Message =
+  Event | { type: "error"; message: string } | { type: "done" };
 
 function post(message: Message): void {
   postMessage(message);
@@ -24,15 +26,20 @@ function post(message: Message): void {
 let compiled: { source: string; ast: Node[] } | undefined;
 
 onmessage = ({ data }: MessageEvent<Request>) => {
-  if (compiled?.source != data.source)
-    compiled = {
-      source: data.source,
-      ast: new Script({ value: data.source }).compile(),
-    };
+  try {
+    if (compiled?.source != data.source)
+      compiled = {
+        source: data.source,
+        ast: new Script({ value: data.source }).compile(),
+      };
 
-  const machine = new Machine(library, constants, post);
-  machine.params = data.params;
-  machine.exec(compiled.ast);
+    const machine = new Machine(library, constants, post);
+    machine.params = data.params;
+    machine.exec(compiled.ast);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    post({ type: "error", message });
+  }
 
   post({ type: "done" });
 };

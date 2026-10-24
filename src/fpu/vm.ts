@@ -58,7 +58,7 @@ export class Machine {
       case "$resolve": {
         const value = this.frameOf(node.sym)?.[node.sym];
 
-        if (value == null) throw "unknown symbol: " + node.sym;
+        if (value == null) throw new Error("unknown symbol: " + node.sym);
 
         return value;
       }
@@ -69,7 +69,7 @@ export class Machine {
 
         const lhs = this.frameOf(sym)?.[sym];
 
-        if (lhs == null) throw "unknown symbol: " + sym;
+        if (lhs == null) throw new Error("unknown symbol: " + sym);
 
         const args = node.lhs.args.map((a) => this.interpret(a));
 
@@ -93,7 +93,7 @@ export class Machine {
 
         if (builtin) return builtin(this, args);
 
-        throw "symbol is undefined: " + node.sym;
+        throw new Error("symbol is undefined: " + node.sym);
       }
 
       case "$mkscalar": {
@@ -389,7 +389,7 @@ function binary(operator: BinaryOp, lhs: Value, rhs: Value): Value {
       break;
 
     default:
-      throw "unknown operator: " + op;
+      throw new Error("unknown operator: " + op);
   }
 
   return value;

@@ -12,7 +12,8 @@ type Values = Map<ParamId, number>;
 // The workspace of a page: the script, the controls for the parameters it
 // declares and the figures it draws. The script runs when it is submitted
 // and when a parameter changes. A description, in HTML, is shown beside the
-// figures.
+// figures. A run that fails shows its error in place of the controls,
+// until the next run, and removes none of the figures already shown.
 export function App({
   script,
   description,
@@ -28,6 +29,7 @@ export function App({
   const [values, setValues] = useState<Values>(new Map());
 
   const [figures, setFigures] = useState<Figures>(new Map());
+  const [error, setError] = useState<string>();
   const frame = useRef(0);
 
   const run = useCallback(
@@ -35,6 +37,9 @@ export function App({
       const declared: Param[] = [];
       const hints = new Map<ParamId, string>();
       const drawn: Figures = new Map();
+      let failed: string | undefined;
+
+      setError(undefined);
 
       // Shows figures at the next animation frame. Of the updates that
       // arrive before it, only the last is drawn.
@@ -60,8 +65,15 @@ export function App({
             show((shown) => overlay(shown, drawn));
             break;
 
+          case "error":
+            failed = message.message;
+            break;
+
           // what the run did not declare or draw is removed
           case "done":
+            setError(failed);
+            if (failed) break;
+
             setParams(declared.map((p) => ({ ...p, hint: hints.get(p.id) })));
             show(() => drawn);
             break;
@@ -120,17 +132,27 @@ export function App({
             />
           </fieldset>
 
-          <fieldset className="parameters">
-            <legend>Parameters</legend>
+          {error ? (
+            <fieldset className="errors">
+              <legend>Errors</legend>
 
-            <Parameters
-              params={params.map((p) => ({
-                ...p,
-                value: values.get(p.id) ?? p.value,
-              }))}
-              onChange={change}
-            />
-          </fieldset>
+              <p className="error" role="alert">
+                {error}
+              </p>
+            </fieldset>
+          ) : (
+            <fieldset className="parameters">
+              <legend>Parameters</legend>
+
+              <Parameters
+                params={params.map((p) => ({
+                  ...p,
+                  value: values.get(p.id) ?? p.value,
+                }))}
+                onChange={change}
+              />
+            </fieldset>
+          )}
         </div>
 
         <div className="actions">

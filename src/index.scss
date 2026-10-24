@@ -6,6 +6,7 @@ $light-green: #3c5233;
 $beige: #b38a58;
 $blue: #2e5a87;
 $marigold: #eaa221;
+$red: #8a1c1c;
 
 html,
 body {
@@ -135,6 +136,10 @@ table {
     background: color.adjust($light-green, $lightness: 60%);
   }
 
+  fieldset.errors > legend {
+    background: color.adjust($red, $lightness: 50%);
+  }
+
   // padded and spaced like a fieldset, with its summary straddling the top
   // border as a legend does; its border is then level with a fieldset's
   // beside it
@@ -174,10 +179,12 @@ table {
     }
   }
 
-  // the description and the parameters are as wide as each other, until on a
-  // tablet or narrower the description is above the figures
+  // the description and the parameters, or the errors in their place, are
+  // as wide as each other, until on a tablet or narrower the description is
+  // above the figures
   .figures > details,
-  .parameters {
+  .parameters,
+  .errors {
     box-sizing: border-box;
     width: 25%;
     max-width: 35rem;
@@ -202,13 +209,15 @@ table {
     }
   }
 
-  // on a narrow screen, figures, parameters and source stack in that order
+  // on a narrow screen, figures, parameters (or errors) and source stack in
+  // that order
   @media (max-width: 40em) {
     .flex-parent {
       flex-direction: column;
     }
 
-    .parameters {
+    .parameters,
+    .errors {
       order: -1;
     }
   }
@@ -220,4 +229,12 @@ header select {
 
 .blurb {
   max-width: 40em;
+}
+
+.error {
+  padding: 0.5em;
+  font-family: monospace;
+  color: $red;
+  background: rgba($red, 0.08);
+  border-left: 3px solid $red;
 }

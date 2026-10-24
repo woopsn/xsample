@@ -71,7 +71,7 @@ export const emitters: Record<string, Builtin> = {
   param(vm, args) {
     // assert args.length == 2 || args.length == 3
     // assert args[1].rows == 1
-    if (!args[0].text) throw "param: the name must be a string";
+    if (!args[0].text) throw new Error("param: the name must be a string");
 
     const id = stringOf(args[0]);
     const range = args[1].data;
@@ -86,8 +86,8 @@ export const emitters: Record<string, Builtin> = {
   // `phint(name, hint)` describes a parameter, for its control.
   phint(vm, args) {
     // assert args.length == 2
-    if (!args[0].text) throw "phint: the name must be a string";
-    if (!args[1].text) throw "phint: the hint must be a string";
+    if (!args[0].text) throw new Error("phint: the name must be a string");
+    if (!args[1].text) throw new Error("phint: the hint must be a string");
 
     vm.emit({ type: "hint", id: stringOf(args[0]), hint: stringOf(args[1]) });
 
@@ -103,10 +103,11 @@ export const emitters: Record<string, Builtin> = {
     for (let i = 1; i < args.length; i += 2) {
       const [property, value] = [args[i], args[i + 1]];
 
-      if (!property.text) throw "figure: a property must be named by a string";
+      if (!property.text)
+        throw new Error("figure: a property must be named by a string");
       if (stringOf(property) != "name")
-        throw "figure: unknown property: " + stringOf(property);
-      if (!value?.text) throw "figure: the name must be a string";
+        throw new Error("figure: unknown property: " + stringOf(property));
+      if (!value?.text) throw new Error("figure: the name must be a string");
 
       properties.name = stringOf(value);
     }
