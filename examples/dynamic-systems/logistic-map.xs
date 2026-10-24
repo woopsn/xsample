@@ -8,13 +8,14 @@ n = floor(param("n", 1:100, 30, "Number of iterations"))
 f = @(x) r*x.*(1-x);
 
 I = linspace(0, 1, 4000);
-figure(1); title("Orbits")
-scatter(I, iterate(f, n, I), I, I)
-ylim([0 1])
-xlabel("initial population"); ylabel("population after n steps")
+figure(1);
+  title("Orbits"); ylim([0 1])
+  scatter(I, iterate(f, n, I), I, I)
+  xlabel("initial population")
+  legend("population after n steps", "y = x")
 
-figure(2); title("Detail")
-scatter(I, iterate(f, n, I), I, I)
-xlim([0.45 0.55])
-ylim([0.3 0.6])
-xlabel("initial population"); ylabel("population after n steps")
+figure(2);
+  title("Detail"); ylim([0.3 0.6])
+  scatter(I, iterate(f, n, I), I, I)
+  xlabel("initial population");
+  legend("population after n steps", "y = x")
