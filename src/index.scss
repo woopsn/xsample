@@ -1,7 +1,11 @@
+@use "sass:color";
+
 $black: #0d1f22;
 $green: #264027;
 $light-green: #3c5233;
 $beige: #b38a58;
+$blue: #2e5a87;
+$marigold: #eaa221;
 
 html,
 body {
@@ -95,7 +99,19 @@ table {
   fieldset > legend,
   details > summary {
     padding: 0.6rem;
-    background: lighten($light-green, 60%);
+  }
+
+  // the figures, the description and the controls each have a colour
+  fieldset.display > legend {
+    background: color.adjust($marigold, $lightness: 30%);
+  }
+
+  details > summary {
+    background: color.adjust($blue, $lightness: 50%);
+  }
+
+  fieldset:not(.display) > legend {
+    background: color.adjust($light-green, $lightness: 60%);
   }
 
   // padded like a fieldset
