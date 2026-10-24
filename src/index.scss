@@ -87,6 +87,42 @@ table {
     box-sizing: border-box;
   }
 
+  // the gutter is as tall as the textarea beside it, and its numbers have the
+  // same padding and line height as the lines they number; it shows on the
+  // fieldset, against the textarea's border
+  .editor {
+    $border: 1px;
+
+    display: grid;
+    grid-template-columns: auto 1fr;
+    height: 100%;
+
+    textarea,
+    .gutter {
+      line-height: 1.4;
+    }
+
+    textarea {
+      border: $border solid #ccc;
+      resize: vertical;
+    }
+
+    .gutter {
+      height: 0;
+      min-height: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+      // further down than the textarea's, so it can scroll as far as the
+      // textarea does above a horizontal scrollbar
+      padding: calc(0.5rem + $border) 0.5rem 2rem 0;
+      font-family: monospace;
+      font-size: 1rem;
+      text-align: right;
+      color: rgba($black, 0.45);
+      user-select: none;
+    }
+  }
+
   label,
   input,
   textarea,

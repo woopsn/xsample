@@ -3,6 +3,7 @@ import type { ParamId } from "../fpu/events";
 import { Runner } from "../xsampler/runner";
 import type { Failure } from "../xsampler/worker";
 import { Display } from "./Display";
+import { Editor } from "./Editor";
 import { draw, overlay } from "./figure";
 import type { Figures } from "./figure";
 import { Parameters } from "./Parameters";
@@ -126,11 +127,7 @@ export function App({
           <fieldset className="flex">
             <legend>Source</legend>
 
-            <textarea
-              rows={8}
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-            />
+            <Editor value={source} onChange={setSource} />
           </fieldset>
 
           {error ? (
