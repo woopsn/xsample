@@ -11,7 +11,7 @@ type Values = Map<ParamId, number>;
 
 // The workspace of a page: the script, the controls for the parameters it
 // declares and the figures it draws. The script runs when it is submitted
-// and when a parameter changes. A description, in HTML, is shown beneath the
+// and when a parameter changes. A description, in HTML, is shown beside the
 // figures.
 export function App({
   script,
@@ -84,16 +84,18 @@ export function App({
 
   return (
     <>
-      <div className="flex-parent">
-        <Display figures={figures} />
-      </div>
+      <div className="figures">
+        <div className="flex-parent">
+          <Display figures={figures} />
+        </div>
 
-      {description && (
-        <details className="description" open>
-          <summary>Description</summary>
-          <div dangerouslySetInnerHTML={{ __html: description }} />
-        </details>
-      )}
+        {description && (
+          <details className="description" open>
+            <summary>Description</summary>
+            <div dangerouslySetInnerHTML={{ __html: description }} />
+          </details>
+        )}
+      </div>
 
       <form
         noValidate

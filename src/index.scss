@@ -110,6 +110,44 @@ table {
     }
   }
 
+  // the description is beside the figures, or on a tablet or narrower,
+  // above them
+  .figures {
+    display: flex;
+    align-items: flex-start;
+    gap: 1em;
+
+    > .flex-parent {
+      flex: 1;
+      min-width: 0;
+    }
+
+    // spaced by the margins beneath each
+    @media (max-width: 64em) {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: 0;
+
+      > .flex-parent {
+        flex: none;
+      }
+    }
+  }
+
+  // the description and the parameters are as wide as each other, until on a
+  // tablet or narrower the description is above the figures
+  .figures > details,
+  .parameters {
+    box-sizing: border-box;
+    width: 25%;
+    max-width: 35rem;
+
+    @media (max-width: 64em) {
+      width: auto;
+      max-width: none;
+    }
+  }
+
   fieldset {
     // a figure may shrink below the width its chart was drawn at
     &.display {
