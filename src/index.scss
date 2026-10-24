@@ -96,9 +96,15 @@ table {
     }
   }
 
+  // a legend, and a summary styled as one, is a padded line of text
+  $legend-padding: 0.6rem;
+  $legend-line-height: 1.2rem;
+  $legend-height: $legend-line-height + 2 * $legend-padding;
+
   fieldset > legend,
   details > summary {
-    padding: 0.6rem;
+    padding: $legend-padding;
+    line-height: $legend-line-height;
   }
 
   // the figures, the description and the controls each have a colour
@@ -114,14 +120,17 @@ table {
     background: color.adjust($light-green, $lightness: 60%);
   }
 
-  // padded like a fieldset
+  // padded and spaced like a fieldset, with its summary straddling the top
+  // border as a legend does; its border is then level with a fieldset's
+  // beside it
   details {
-    padding: 0.35em 0.75em 0.625em;
-    margin-bottom: 1rem;
+    padding: 0 0.75em 0.625em;
+    margin: 0.5 * $legend-height 2px 1rem;
 
     // as narrow as a legend, keeping its disclosure marker
     > summary {
       width: fit-content;
+      margin: -0.5 * $legend-height 0 0.35em;
       cursor: pointer;
     }
   }
