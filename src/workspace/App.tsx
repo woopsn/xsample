@@ -161,7 +161,7 @@ export function App({
         </div>
 
         <div className="actions">
-          <input type="submit" value="Calculate" />
+          <input type="submit" value="Calculate" title="Ctrl+Enter" />
         </div>
       </form>
     </>

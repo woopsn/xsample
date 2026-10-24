@@ -9,7 +9,7 @@ interface Props {
 
 // A textarea for the script, with its line numbers in a gutter on the left,
 // where the line of an error is marked. Lines do not wrap, so that each stays
-// level with its number.
+// level with its number. Ctrl+Enter (Cmd+Enter on a Mac) submits its form.
 export function Editor({ value, onChange, errorLine }: Props) {
   const gutter = useRef<HTMLDivElement>(null);
   const lines = value.split("\n").length;
@@ -33,6 +33,12 @@ export function Editor({ value, onChange, errorLine }: Props) {
         spellCheck={false}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key == "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            e.currentTarget.form?.requestSubmit();
+          }
+        }}
         onScroll={(e) => {
           gutter.current!.scrollTop = e.currentTarget.scrollTop;
         }}
