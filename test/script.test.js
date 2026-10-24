@@ -1,5 +1,14 @@
 import { describe, expect, test } from "vitest";
-import { compile, literal, variable } from "./helpers";
+import { Script } from "../src/xsampler/script";
+import { ScriptError } from "../src/fpu/vm";
+import { literal, variable } from "./helpers";
+
+// The nodes a script desugars into, without the lines they start on.
+function compile(source) {
+  return new Script({ value: source })
+    .compile()
+    .map((statement) => statement.node);
+}
 
 describe("desugaring", () => {
   test("assigning to a variable registers it", () => {
@@ -54,5 +63,15 @@ describe("desugaring", () => {
     const [{ formula }] = compile("@(n) 0:n");
 
     expect(formula).toEqual(compile("0:n")[0]);
+  });
+});
+
+describe("syntax errors", () => {
+  test("are thrown as a ScriptError at the line they arise on", () => {
+    const script = new Script({ value: "x = 1\n\ny = (2 +" });
+
+    expect(() => script.compile()).toThrow(
+      expect.objectContaining({ constructor: ScriptError, line: 3 }),
+    );
   });
 });

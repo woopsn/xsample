@@ -1,6 +1,11 @@
 import { describe, expect, test } from "vitest";
-import { parse } from "../xsampler.p";
+import * as parser from "../xsampler.p";
 import { literal, variable } from "./helpers";
+
+// The statements a script parses into, without the lines they start on.
+function parse(source) {
+  return parser.parse(source).map((statement) => statement.node);
+}
 
 describe("literals", () => {
   test("integer", () => {
@@ -121,6 +126,12 @@ describe("precedence", () => {
 describe("statements", () => {
   test("end at a newline or a semicolon", () => {
     expect(parse("a\nb; c")).toEqual(["a", "b", "c"].map(variable));
+  });
+
+  test("record the line they start on", () => {
+    const statements = parser.parse("\n a\n\n# c\nb; c ...\n + d");
+
+    expect(statements.map((statement) => statement.line)).toEqual([2, 5, 5]);
   });
 
   test("blank lines between statements are skipped", () => {

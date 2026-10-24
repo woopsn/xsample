@@ -137,6 +137,7 @@ export function App({
             <fieldset className="errors">
               <legend>
                 {error.kind == "syntax" ? "Syntax Error" : "Runtime Error"}
+                {error.line != null && ` on line ${error.line}`}
               </legend>
 
               <p className="error" role="alert">

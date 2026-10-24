@@ -82,6 +82,12 @@ export interface Binary {
   rhs: Node;
 }
 
+// A statement of a script, and the line it starts on, counting from 1.
+export interface Statement {
+  line: number;
+  node: Node;
+}
+
 export type Node =
   | Resolve
   | Call

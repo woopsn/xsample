@@ -55,5 +55,15 @@ export type Parsed =
   | ParsedRange
   | ParsedAssignment;
 
+// A statement, and the line of the script it starts on, counting from 1.
+export interface ParsedStatement {
+  line: number;
+  node: Parsed;
+}
+
+export class SyntaxError extends Error {
+  location: { start: { line: number; column: number } };
+}
+
 // Throws a SyntaxError if the source is not a script.
-export function parse(source: string): Parsed[];
+export function parse(source: string): ParsedStatement[];

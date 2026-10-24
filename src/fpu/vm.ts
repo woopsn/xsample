@@ -1,4 +1,4 @@
-import type { BinaryOp, Node, Resolve } from "./ast";
+import type { BinaryOp, Node, Resolve, Statement } from "./ast";
 import type { Event, ParamId } from "./events";
 import { mknum, mkstring } from "./value";
 import type { Formula, Value } from "./value";
@@ -7,6 +7,16 @@ import type { Formula, Value } from "./value";
 export type Frame = Record<string, Value>;
 
 export type Builtin = (vm: Machine, args: Value[]) => Value;
+
+// An error in the statement on `line` of a script.
+export class ScriptError extends Error {
+  line: number;
+
+  constructor(line: number, message: string) {
+    super(message);
+    this.line = line;
+  }
+}
 
 export class Machine {
   library: Record<string, Builtin>;
@@ -35,12 +45,22 @@ export class Machine {
     this.emit = emit;
   }
 
-  exec(ast: Node[]): void {
+  // Runs each statement in turn. Throws a ScriptError for the first that
+  // fails, at the line it starts on: a formula that fails is reported at the
+  // statement that called it.
+  exec(statements: Statement[]): void {
     // copied, as `pi(0) = 3` would otherwise change pi for later runs too
     for (const [sym, value] of Object.entries(this.constants))
       this.frames[0][sym] = { ...value, data: value.data.slice() };
 
-    for (const node of ast) this.interpret(node);
+    for (const { line, node } of statements) {
+      try {
+        this.interpret(node);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new ScriptError(line, message);
+      }
+    }
   }
 
   interpret(node: Node): Value {

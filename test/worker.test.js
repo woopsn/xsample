@@ -23,8 +23,8 @@ describe("worker", () => {
   });
 
   test("posts the error of a script that fails to compile, then done", () => {
-    expect(messages("x = 1 +")).toEqual(["error", "done"]);
-    expect(posted[0].kind).toBe("syntax");
+    expect(messages("x = 1\nx = x +")).toEqual(["error", "done"]);
+    expect(posted[0]).toMatchObject({ kind: "syntax", line: 2 });
   });
 
   test("posts the error of a script that fails to run, then done", () => {
@@ -36,6 +36,7 @@ describe("worker", () => {
     expect(posted[1]).toEqual({
       type: "error",
       kind: "runtime",
+      line: 2,
       message: "unknown symbol: nosuch",
     });
   });

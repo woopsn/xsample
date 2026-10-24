@@ -2,7 +2,7 @@ import { Script } from "../src/xsampler/script";
 import { Machine } from "../src/fpu/vm";
 import { library, constants } from "../src/fpu/library";
 
-// Parses and desugars a script, returning its AST.
+// Parses and desugars a script, returning its statements.
 export function compile(source) {
   return new Script({ value: source }).compile();
 }

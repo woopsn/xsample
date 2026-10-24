@@ -2,10 +2,10 @@
 // and posts back each event the script emits, an "error" if the script
 // fails to compile or run, then "done".
 
-import type { Node } from "../fpu/ast";
+import type { Statement } from "../fpu/ast";
 import type { Event, ParamId } from "../fpu/events";
 import { constants, library } from "../fpu/library";
-import { Machine } from "../fpu/vm";
+import { Machine, ScriptError } from "../fpu/vm";
 import { Script } from "./script";
 
 export interface Request {
@@ -19,6 +19,7 @@ export interface Request {
 export type Failure = {
   type: "error";
   kind: "syntax" | "runtime";
+  line?: number;
   message: string;
 };
 
@@ -30,13 +31,13 @@ function post(message: Message): void {
 
 // The script last run, compiled: a run that changes only a parameter
 // reuses it.
-let compiled: { source: string; ast: Node[] } | undefined;
+let compiled: { source: string; statements: Statement[] } | undefined;
 
-function compile(source: string): Node[] {
+function compile(source: string): Statement[] {
   if (compiled?.source != source)
-    compiled = { source, ast: new Script({ value: source }).compile() };
+    compiled = { source, statements: new Script({ value: source }).compile() };
 
-  return compiled.ast;
+  return compiled.statements;
 }
 
 // Calls `f`, posting what it throws as an error of the given kind.
@@ -44,19 +45,20 @@ function attempt<T>(kind: Failure["kind"], f: () => T): T | undefined {
   try {
     return f();
   } catch (error) {
+    const line = error instanceof ScriptError ? error.line : undefined;
     const message = error instanceof Error ? error.message : String(error);
-    post({ type: "error", kind, message });
+    post({ type: "error", kind, line, message });
   }
 }
 
 onmessage = ({ data }: MessageEvent<Request>) => {
-  const ast = attempt("syntax", () => compile(data.source));
+  const statements = attempt("syntax", () => compile(data.source));
 
-  if (ast)
+  if (statements)
     attempt("runtime", () => {
       const machine = new Machine(library, constants, post);
       machine.params = data.params;
-      machine.exec(ast);
+      machine.exec(statements);
     });
 
   post({ type: "done" });

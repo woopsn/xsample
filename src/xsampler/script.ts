@@ -1,6 +1,7 @@
-import { parse } from "../../xsampler.p";
+import { parse, SyntaxError } from "../../xsampler.p";
 import type { CompoundOp, Parsed, ParsedCall } from "../../xsampler.p";
-import type { BinaryOp, Call, Node, Resolve } from "../fpu/ast";
+import type { BinaryOp, Call, Node, Resolve, Statement } from "../fpu/ast";
+import { ScriptError } from "../fpu/vm";
 
 // Where a script's text is read from, such as a textarea.
 export interface Source {
@@ -15,8 +16,18 @@ export class Script {
   }
 
   // Parses the script and desugars it into what the machine interprets.
-  compile(): Node[] {
-    return parse(this.source.value.trim()).map(desugar);
+  // Throws a ScriptError if the script does not parse.
+  compile(): Statement[] {
+    try {
+      return parse(this.source.value).map(({ line, node }) => ({
+        line,
+        node: desugar(node),
+      }));
+    } catch (error) {
+      if (!(error instanceof SyntaxError)) throw error;
+
+      throw new ScriptError(error.location.start.line, error.message);
+    }
   }
 }
 

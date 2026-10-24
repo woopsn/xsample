@@ -34,7 +34,7 @@
 
 Program = __ statements:Statement* { return statements; }
 
-Statement = expr:Expression semi { return expr; }
+Statement = node:Expression semi { return { line: location().start.line, node }; }
 
 Expression = _ expr:(SetExpr / LogExpr) _ { return expr; }
 SetExpr = lhs:VariableOrCall tail:(_ setop _ Expression)+ { return makeOp(lhs, tail); }

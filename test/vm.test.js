@@ -156,6 +156,12 @@ describe("variables", () => {
   test("calling an undefined function throws", () => {
     expect(() => run("x = nosuch(1)")).toThrow("symbol is undefined: nosuch");
   });
+
+  test("an error is thrown at the line of the statement that failed", () => {
+    expect(() => run("f = @(x) nosuch\n\ny = f(1)")).toThrow(
+      expect.objectContaining({ line: 3, message: "unknown symbol: nosuch" }),
+    );
+  });
 });
 
 describe("indexing", () => {
