@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ParamId } from "../fpu/events";
 import { Runner } from "../xsampler/runner";
+import type { Failure } from "../xsampler/worker";
 import { Display } from "./Display";
 import { draw, overlay } from "./figure";
 import type { Figures } from "./figure";
@@ -29,7 +30,7 @@ export function App({
   const [values, setValues] = useState<Values>(new Map());
 
   const [figures, setFigures] = useState<Figures>(new Map());
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<Failure>();
   const frame = useRef(0);
 
   const run = useCallback(
@@ -37,7 +38,7 @@ export function App({
       const declared: Param[] = [];
       const hints = new Map<ParamId, string>();
       const drawn: Figures = new Map();
-      let failed: string | undefined;
+      let failed: Failure | undefined;
 
       setError(undefined);
 
@@ -66,7 +67,7 @@ export function App({
             break;
 
           case "error":
-            failed = message.message;
+            failed = message;
             break;
 
           // what the run did not declare or draw is removed
@@ -134,10 +135,12 @@ export function App({
 
           {error ? (
             <fieldset className="errors">
-              <legend>Errors</legend>
+              <legend>
+                {error.kind == "syntax" ? "Syntax Error" : "Runtime Error"}
+              </legend>
 
               <p className="error" role="alert">
-                {error}
+                {error.message}
               </p>
             </fieldset>
           ) : (

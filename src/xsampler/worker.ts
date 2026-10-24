@@ -14,8 +14,15 @@ export interface Request {
   params: Map<ParamId, number>;
 }
 
-export type Message =
-  Event | { type: "error"; message: string } | { type: "done" };
+// A script that fails to compile has a syntax error; one that fails as it
+// runs, a runtime error.
+export type Failure = {
+  type: "error";
+  kind: "syntax" | "runtime";
+  message: string;
+};
+
+export type Message = Event | Failure | { type: "done" };
 
 function post(message: Message): void {
   postMessage(message);
@@ -25,21 +32,32 @@ function post(message: Message): void {
 // reuses it.
 let compiled: { source: string; ast: Node[] } | undefined;
 
-onmessage = ({ data }: MessageEvent<Request>) => {
-  try {
-    if (compiled?.source != data.source)
-      compiled = {
-        source: data.source,
-        ast: new Script({ value: data.source }).compile(),
-      };
+function compile(source: string): Node[] {
+  if (compiled?.source != source)
+    compiled = { source, ast: new Script({ value: source }).compile() };
 
-    const machine = new Machine(library, constants, post);
-    machine.params = data.params;
-    machine.exec(compiled.ast);
+  return compiled.ast;
+}
+
+// Calls `f`, posting what it throws as an error of the given kind.
+function attempt<T>(kind: Failure["kind"], f: () => T): T | undefined {
+  try {
+    return f();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    post({ type: "error", message });
+    post({ type: "error", kind, message });
   }
+}
+
+onmessage = ({ data }: MessageEvent<Request>) => {
+  const ast = attempt("syntax", () => compile(data.source));
+
+  if (ast)
+    attempt("runtime", () => {
+      const machine = new Machine(library, constants, post);
+      machine.params = data.params;
+      machine.exec(ast);
+    });
 
   post({ type: "done" });
 };
