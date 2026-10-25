@@ -14,7 +14,7 @@ describe("examples", () => {
       ["Dynamic Systems", ["Heat - 1D (Explicit)", "Logistic Map"]],
       [
         "Fourier Analysis",
-        ["Approximate Identity", "Fourier Series", "Fourier Transform"],
+        ["Approximate Identities", "Fourier Series", "Fourier Transform"],
       ],
     ]);
   });
